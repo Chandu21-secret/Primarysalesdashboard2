@@ -148,7 +148,7 @@ secondary_segments = {
          
     "Peru":               ["Powertools"],
     "Honduras":           ["Powertools"],
-    "Panama":             ["Pawertools"]
+    "Panama":             ["Powertools"]
 
 }
 
@@ -287,7 +287,7 @@ elif sales_type == "Primary Sales" and trans_type == "Outgoing":
 
 
 # ─── Secondary Sales → Incoming ────────────────────────────────────────────
-elif sales_type == "Secondary Sales" and trans_type == "Incoming":
+elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
     country = st.selectbox("🌍 Select Country:", list(secondary_sheets.keys()))
     links   = secondary_sheets[country]
     
@@ -305,10 +305,11 @@ elif sales_type == "Secondary Sales" and trans_type == "Incoming":
         st.error(f"❌ Error loading '{sel}': {e}")
 
 # ─── Handle Secondary Sales / Outgoing ─────────────────────────────────────────
-elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
-    st.info("🚧 Secondary Sales / Outgoing is under construction.")
+elif sales_type == "Secondary Sales" and trans_type == "Incoming":
+    st.info("🚧 Secondary Sales / Incoming is under construction.")
 
 
 
    
+
 
