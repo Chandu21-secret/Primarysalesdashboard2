@@ -134,7 +134,7 @@ secondary_sheets = {
     "Nicaragua":[
         "https://docs.google.com/spreadsheets/d/1DHtBDqrJ7F47YNjJRIMACkDuZIZ0FTUEUT5VWo59QNU/export?format=csv"
 
-}
+    ]
 
 # ─── Secondary Sales – country → list of segment names ─────────────────────────
 secondary_segments = {
@@ -281,5 +281,6 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 # ─── Secondary Sales / Incoming (disabled) ─────────────────────────────────────
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.info("🚧 Secondary Sales / Incoming is disabled. Please select 'Outgoing'.")
+
 
 
