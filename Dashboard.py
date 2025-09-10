@@ -152,14 +152,16 @@ primary_outgoing = {
     "Master Data":"https://docs.google.com/spreadsheets/d/1bzyOX9uIMwoTgZhTd_aiapj4ZzsEvCut2mOV5T9zBQw/export?format=csv&gid=0"
 }
 
-# ─── UI Controls ────────────────────────────────────────────────────────────────
-sales_type = st.radio("Select Sales Type:", ["Primary Sales", "Secondary Sales"])
 
-# Primary: Incoming/Outgoing; Secondary: sirf Outgoing
+# ─── UI Controls ────────────────────────────────────────────────────────────────
+sales_type = st.radio("Select Sales Type:", ["Primary Sales", "Secondary Sales"], key="sales_type_radio")
+
+# Primary: default = Incoming; Secondary: default = Outgoing (dono options dikhte rahenge)
 if sales_type == "Primary Sales":
-    trans_type = st.radio("Select Transaction Type:", ["Incoming", "Outgoing"], index=0)
+    trans_type = st.radio("Select Transaction Type:", ["Incoming", "Outgoing"], index=0, key="primary_trans_type")
 else:
-    trans_type = "Outgoing"  # Secondary me Incoming disable
+    trans_type = st.radio("Select Transaction Type:", ["Incoming", "Outgoing"], index=1, key="secondary_trans_type")
+
 
 # ─── Primary Sales / Incoming ──────────────────────────────────────────────────
 if sales_type == "Primary Sales" and trans_type == "Incoming":
@@ -267,3 +269,4 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 # ─── Secondary Sales / Incoming (disabled) ─────────────────────────────────────
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.info("🚧 Secondary Sales / Incoming is disabled. Please select 'Outgoing'.")
+
