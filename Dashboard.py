@@ -2,8 +2,11 @@ import streamlit as st
 import pandas as pd
 import requests
 
+# ─── App Configuration ─────────────────────────────────────────────────────────
+# Best practice: set_page_config sabse pehle
+st.set_page_config(page_title="Sales Dashboard", layout="wide")
 
-
+# ─── Styles ───────────────────────────────────────────────────────────────────
 st.markdown("""
     <style>
     /* 1) Smooth animated gradient background */
@@ -42,15 +45,13 @@ st.markdown("""
         background: #89f7fe !important;
     }
 
-    /* 5) Attractive single‐color dropdown (like your screenshot) */
+    /* 5) Attractive single‐color dropdown */
     .stSelectbox select,
     select {
-        /* remove default arrow */
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
 
-        /* white rounded box */
         background-color: #ffffff !important;
         color: #222222 !important;
         border: none !important;
@@ -60,7 +61,6 @@ st.markdown("""
         box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
         cursor: pointer !important;
 
-        /* custom arrow icon */
         background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23222'/%3E%3C/svg%3E");
         background-repeat: no-repeat !important;
         background-position: right 1em center !important;
@@ -105,55 +105,35 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
-
-# ─── App Configuration & Heading ───────────────────────────────────────────────
-st.set_page_config(page_title="Sales Dashboard", layout="wide")
+# ─── Heading ───────────────────────────────────────────────────────────────────
 st.title("📊 Sales Dashboard – Primary & Secondary")
 
-# ✅ Secondary Sales Sheets (Real)
+# ─── Secondary Sales Sheets (Real) ─────────────────────────────────────────────
 secondary_sheets = {
-    
-   
     "Mexico": [
-        
         "https://docs.google.com/spreadsheets/d/1QR37MDuFuX8tRAjBYFxwwtrW_cOZ8CVH45c-Nuy8PB8/export?format=csv",
-        "https://docs.google.com/spreadsheets/d/1mSm6cLpBBvuD7CDYCu_Bm4rpmV4rRqjVbLLUk47soGc/export?format=csv"    ],
-
-
-    "Peru" :[
-        "https://docs.google.com/spreadsheets/d/1Jvhi1oKED8SAviitGfRx09J3bBj9lKOBpRB9zZWcZb8/export?format=csv"
-
+        "https://docs.google.com/spreadsheets/d/1mSm6cLpBBvuD7CDYCu_Bm4rpmV4rRqjVbLLUk47soGc/export?format=csv"
     ],
-
+    "Peru": [
+        "https://docs.google.com/spreadsheets/d/1Jvhi1oKED8SAviitGfRx09J3bBj9lKOBpRB9zZWcZb8/export?format=csv"
+    ],
     "Honduras": [
         "https://docs.google.com/spreadsheets/d/15WN-ThUiTMoQ_zusyXPMKzSq5voKw7nfVu-gZJs2wgg/export?format=csv"
-
-        
     ],
-
-    "Panama": ["https://docs.google.com/spreadsheets/d/1Ee_wOm7NDM1jtOOx4qi2kzQS9YhGg3xVsZp_lIqqSBc/export?format=csv"]                    
-
-                
+    "Panama": [
+        "https://docs.google.com/spreadsheets/d/1Ee_wOm7NDM1jtOOx4qi2kzQS9YhGg3xVsZp_lIqqSBc/export?format=csv"
+    ]
 }
 
-
-# ─── Secondary Sales – country → list of segment names ────────────────────
+# ─── Secondary Sales – country → list of segment names ─────────────────────────
 secondary_segments = {
-    
-   
-   
     "Mexico":   ["Gardening", "Powertools"],
-    
-         
-    "Peru":               ["Powertools"],
-    "Honduras":           ["Powertools"],
-    "Panama":             ["Powertools"]
-
+    "Peru":     ["Powertools"],
+    "Honduras": ["Powertools"],
+    "Panama":   ["Powertools"]
 }
 
-
-# ─── Primary Sales → Incoming Tabs & CSV URLs ─────────────────────────────────
+# ─── Primary Sales → Incoming Tabs & CSV URLs ──────────────────────────────────
 sheet_id = "1u06bqzGn8HtsvOOde30bvVdsXJfvvmfHiy1m1pDhtPA"
 primary_tabs = {
     "Campaign Leads":       f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid=0",
@@ -164,25 +144,24 @@ primary_tabs = {
     "Stronwell":            f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid=1167901411"
 }
 
-
-
-
 primary_outgoing = {
     "Rohit":  "https://docs.google.com/spreadsheets/d/1GGP5SjqukB05BlsgO8LbtUEypaxU6erCENBn30e6Jgc/export?format=csv",
     "Rahul":  "https://docs.google.com/spreadsheets/d/1FRBXNVnQLx4kCypiKPAYk0LT0Ih1UtYQLkIWqVQP8zE/export?format=csv",
     "Ashwin": "https://docs.google.com/spreadsheets/d/1W7zy8XheNiUpNAO6XOrPkF414KMCrs6C6UECiybZ154/export?format=csv",
     "Deepak": "https://docs.google.com/spreadsheets/d/14vR6FE01iC2hVweBiY1vjGpvVHnCDSSERDNXiRGZyoI/export?format=csv",
     "Master Data":"https://docs.google.com/spreadsheets/d/1bzyOX9uIMwoTgZhTd_aiapj4ZzsEvCut2mOV5T9zBQw/export?format=csv&gid=0"
-
 }
 
-
-
 # ─── UI Controls ────────────────────────────────────────────────────────────────
-sales_type = st.radio("Select Sales Type:",      ["Primary Sales", "Secondary Sales"])
-trans_type = st.radio("Select Transaction Type:", ["Incoming", "Outgoing"])
+sales_type = st.radio("Select Sales Type:", ["Primary Sales", "Secondary Sales"])
 
-# ─── Handle Primary Sales / Incoming ───────────────────────────────────────────
+# Primary: Incoming/Outgoing; Secondary: sirf Outgoing
+if sales_type == "Primary Sales":
+    trans_type = st.radio("Select Transaction Type:", ["Incoming", "Outgoing"], index=0)
+else:
+    trans_type = "Outgoing"  # Secondary me Incoming disable
+
+# ─── Primary Sales / Incoming ──────────────────────────────────────────────────
 if sales_type == "Primary Sales" and trans_type == "Incoming":
     tab = st.selectbox("📑 Select Primary Tab:", list(primary_tabs.keys()))
     csv_url = primary_tabs[tab]
@@ -193,15 +172,12 @@ if sales_type == "Primary Sales" and trans_type == "Incoming":
     except Exception as e:
         st.error(f"❌ Could not load '{tab}': {e}")
 
-
-# ─── Handle Primary Sales / Outgoing ───────────────────────────────────────────
+# ─── Primary Sales / Outgoing ──────────────────────────────────────────────────
 elif sales_type == "Primary Sales" and trans_type == "Outgoing":
     st.subheader("🏷️ Primary Sales – Outgoing")
 
-    # 1) सेल्सपरसन चुनें
     person = st.selectbox("👤 Select Salesperson:", list(primary_outgoing.keys()))
 
-    # 2) हर सेल्सपर्सन के लिए hard-coded country→CSV URLs
     outgoing_sheets_map = {
         "Deepak": {
             "Brazil":      "https://docs.google.com/spreadsheets/d/14vR6FE01iC2hVweBiY1vjGpvVHnCDSSERDNXiRGZyoI/export?format=csv&gid=0",
@@ -238,33 +214,22 @@ elif sales_type == "Primary Sales" and trans_type == "Outgoing":
             "Colambia":   "https://docs.google.com/spreadsheets/d/1W7zy8XheNiUpNAO6XOrPkF414KMCrs6C6UECiybZ154/export?format=csv&gid=1503582524",
             "Chile":      "https://docs.google.com/spreadsheets/d/1W7zy8XheNiUpNAO6XOrPkF414KMCrs6C6UECiybZ154/export?format=csv&gid=1549438486",
             "Costa Rica": "https://docs.google.com/spreadsheets/d/1W7zy8XheNiUpNAO6XOrPkF414KMCrs6C6UECiybZ154/export?format=csv&gid=1153197663"
-
-
         },
-
-
-       "Master Data":{
-           
-           "Master Data": "https://docs.google.com/spreadsheets/d/1bzyOX9uIMwoTgZhTd_aiapj4ZzsEvCut2mOV5T9zBQw/export?format=csv&gid=0"
-
-       }
+        "Master Data": {
+            "Master Data": "https://docs.google.com/spreadsheets/d/1bzyOX9uIMwoTgZhTd_aiapj4ZzsEvCut2mOV5T9zBQw/export?format=csv&gid=0"
+        }
     }
 
-    # 3) अगर person mapping में है तो सिर्फ़ उसके countries दिखाएँ
     if person in outgoing_sheets_map:
         country_dict = outgoing_sheets_map[person]
         country = st.selectbox("🌍 Select Country:", list(country_dict.keys()))
         csv_url = country_dict[country]
-
-        # 4) CSV लोड और दिखाएँ
         try:
             df2 = pd.read_csv(csv_url)
             st.markdown(f"### 🔗 {person} → {country}")
             st.dataframe(df2, use_container_width=True)
         except Exception as e:
             st.error(f"❌ Could not load '{country}': {e}")
-
-    # 5) अन्य सेल्सपर्सन के लिए fallback (metadata-based)
     else:
         import re, json, requests
         raw_url    = primary_outgoing[person]
@@ -283,20 +248,15 @@ elif sales_type == "Primary Sales" and trans_type == "Outgoing":
             except Exception as e:
                 st.error(f"❌ Could not load '{title}': {e}")
 
-
-
-
-# ─── Secondary Sales → Incoming ────────────────────────────────────────────
+# ─── Secondary Sales / Outgoing (DATA YAHIN DIKHEGA) ──────────────────────────
 elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
     country = st.selectbox("🌍 Select Country:", list(secondary_sheets.keys()))
     links   = secondary_sheets[country]
-    
-    # Sheet 1/2 की जगह segment names
-    segs  = secondary_segments[country]
-    sel   = st.selectbox("📄 Select Segment:", segs)
-    idx   = segs.index(sel)
-    url   = links[idx]
-    
+    segs    = secondary_segments[country]
+    sel     = st.selectbox("📄 Select Segment:", segs)
+    idx     = segs.index(sel)
+    url     = links[idx]
+
     st.markdown(f"### 🔗 {sel} – {country}")
     try:
         df = pd.read_csv(url)
@@ -304,12 +264,6 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
     except Exception as e:
         st.error(f"❌ Error loading '{sel}': {e}")
 
-# ─── Handle Secondary Sales / Outgoing ─────────────────────────────────────────
+# ─── Secondary Sales / Incoming (disabled) ─────────────────────────────────────
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
-    st.info("🚧 Secondary Sales / Incoming is under construction.")
-
-
-
-   
-
-
+    st.info("🚧 Secondary Sales / Incoming is disabled. Please select 'Outgoing'.")
