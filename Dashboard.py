@@ -115,22 +115,34 @@ secondary_sheets = {
         "https://docs.google.com/spreadsheets/d/1mSm6cLpBBvuD7CDYCu_Bm4rpmV4rRqjVbLLUk47soGc/export?format=csv"
     ],
     "Peru": [
-        "https://docs.google.com/spreadsheets/d/1Jvhi1oKED8SAviitGfRx09J3bBj9lKOBpRB9zZWcZb8/export?format=csv"
+        "https://docs.google.com/spreadsheets/d/1Jvhi1oKED8SAviitGfRx09J3bBj9lKOBpRB9zZWcZb8/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1BqWyqXH6WWhwlCHe6R2tHTMhH5JVarvlAU54siKhw2s/export?format=csv"
+
+        
     ],
     "Honduras": [
-        "https://docs.google.com/spreadsheets/d/15WN-ThUiTMoQ_zusyXPMKzSq5voKw7nfVu-gZJs2wgg/export?format=csv"
+        "https://docs.google.com/spreadsheets/d/15WN-ThUiTMoQ_zusyXPMKzSq5voKw7nfVu-gZJs2wgg/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1KKwLsm2Hp6wdhL6RWf7mJxsZrknaCHZCSlfvmhD4edM/export?format=csv"
+
     ],
     "Panama": [
-        "https://docs.google.com/spreadsheets/d/1Ee_wOm7NDM1jtOOx4qi2kzQS9YhGg3xVsZp_lIqqSBc/export?format=csv"
-    ]
+        "https://docs.google.com/spreadsheets/d/1Ee_wOm7NDM1jtOOx4qi2kzQS9YhGg3xVsZp_lIqqSBc/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/11kKefnHXREvSsQaX6c4XcheaU5pefCCM2h50IGyRkTE/export?format=csv"
+
+    ],
+
+    "Nicaragua":[
+        "https://docs.google.com/spreadsheets/d/1DHtBDqrJ7F47YNjJRIMACkDuZIZ0FTUEUT5VWo59QNU/export?format=csv"
+
 }
 
 # ─── Secondary Sales – country → list of segment names ─────────────────────────
 secondary_segments = {
     "Mexico":   ["Gardening", "Powertools"],
-    "Peru":     ["Powertools"],
-    "Honduras": ["Powertools"],
-    "Panama":   ["Powertools"]
+    "Peru":     ["Powertools", "Gardening"],
+    "Honduras": ["Powertools", "Gardening"],
+    "Panama":   ["Powertools", "Gardening"],
+    "Nicaragua": ["Gardening"]
 }
 
 # ─── Primary Sales → Incoming Tabs & CSV URLs ──────────────────────────────────
@@ -269,4 +281,5 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 # ─── Secondary Sales / Incoming (disabled) ─────────────────────────────────────
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.info("🚧 Secondary Sales / Incoming is disabled. Please select 'Outgoing'.")
+
 
