@@ -130,7 +130,10 @@ secondary_sheets = {
         "https://docs.google.com/spreadsheets/d/15WN-ThUiTMoQ_zusyXPMKzSq5voKw7nfVu-gZJs2wgg/export?format=csv"
 
         
-    ]
+    ],
+
+    "Panama": ["https://docs.google.com/spreadsheets/d/1Ee_wOm7NDM1jtOOx4qi2kzQS9YhGg3xVsZp_lIqqSBc/export?format=csv"]                    
+
                 
 }
 
@@ -140,11 +143,12 @@ secondary_segments = {
     
    
    
-    "Mexico":   ["Gardening", "powertools"],
+    "Mexico":   ["Gardening", "Powertools"],
     
          
     "Peru":               ["Powertools"],
-    "Honduras":           ["Powertools"]
+    "Honduras":           ["Powertools"],
+    "Panama":             ["Pawertools"]
 
 }
 
@@ -307,3 +311,4 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 
 
    
+
