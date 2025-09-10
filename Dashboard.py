@@ -136,6 +136,8 @@ secondary_sheets = {
 
     ]
 
+}
+
 # ─── Secondary Sales – country → list of segment names ─────────────────────────
 secondary_segments = {
     "Mexico":   ["Gardening", "Powertools"],
@@ -281,6 +283,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 # ─── Secondary Sales / Incoming (disabled) ─────────────────────────────────────
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.info("🚧 Secondary Sales / Incoming is disabled. Please select 'Outgoing'.")
+
 
 
 
