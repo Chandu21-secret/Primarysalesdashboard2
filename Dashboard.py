@@ -112,7 +112,9 @@ st.title("📊 Sales Dashboard – Primary & Secondary")
 secondary_sheets = {
     "Mexico": [
         "https://docs.google.com/spreadsheets/d/1QR37MDuFuX8tRAjBYFxwwtrW_cOZ8CVH45c-Nuy8PB8/export?format=csv",
-        "https://docs.google.com/spreadsheets/d/1mSm6cLpBBvuD7CDYCu_Bm4rpmV4rRqjVbLLUk47soGc/export?format=csv"
+        "https://docs.google.com/spreadsheets/d/1mSm6cLpBBvuD7CDYCu_Bm4rpmV4rRqjVbLLUk47soGc/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/198NNm5fBEegZ75EJVtkj5GIGH_TvvEI4O_UyjjGlvak/export?format=csv"
+
     ],
     "Peru": [
         "https://docs.google.com/spreadsheets/d/1Jvhi1oKED8SAviitGfRx09J3bBj9lKOBpRB9zZWcZb8/export?format=csv",
@@ -140,7 +142,7 @@ secondary_sheets = {
 
 # ─── Secondary Sales – country → list of segment names ─────────────────────────
 secondary_segments = {
-    "Mexico":   ["Gardening", "Powertools"],
+    "Mexico":   ["Gardening", "Powertools", "GSP"],
     "Peru":     ["Powertools", "Gardening"],
     "Honduras": ["Powertools", "Gardening"],
     "Panama":   ["Powertools", "Gardening"],
@@ -283,6 +285,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 # ─── Secondary Sales / Incoming (disabled) ─────────────────────────────────────
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.info("🚧 Secondary Sales / Incoming is disabled. Please select 'Outgoing'.")
+
 
 
 
