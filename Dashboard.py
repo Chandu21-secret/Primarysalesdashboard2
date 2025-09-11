@@ -113,14 +113,29 @@ secondary_sheets = {
     ],
     "Nicaragua":[
         "https://docs.google.com/spreadsheets/d/1DHtBDqrJ7F47YNjJRIMACkDuZIZ0FTUEUT5VWo59QNU/export?format=csv"
-    ]
+    ],
+     "Jamaica":[
+        "https://docs.google.com/spreadsheets/d/1Mxu810CoTJaQdJHUFPPzUnRd9ncGDK2V8wNAwpmf3bg/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1wPyc1LZVaVNgIrUJy5oRqj-JvpyIYqyhJ5pvgNnJano/export?format=csv"
+     ],
+
+     "Uruguay":[
+        "https://docs.google.com/spreadsheets/d/1S3tCmjy5rXj4KrDuaejDEPK-Kquf5dz3IUq2Bs67DY0/export?format=csv"
+     ]
+
+    
+  
+               
 }
 secondary_segments = {
     "Mexico":   ["Gardening","Powertools","GSP"],
     "Peru":     ["Powertools","Gardening"],
     "Honduras": ["Powertools","Gardening"],
     "Panama":   ["Powertools","Gardening"],
-    "Nicaragua":["Gardening"]
+    "Nicaragua":["Gardening"],
+    "Jamaica":["Gardening","GSP"],
+    "Uruguay":["Powertools"]
+
 }
 
 sheet_id = "1u06bqzGn8HtsvOOde30bvVdsXJfvvmfHiy1m1pDhtPA"
@@ -263,6 +278,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
