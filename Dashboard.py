@@ -7,9 +7,13 @@ from pathlib import Path
 # ── App config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
 
-# Project-relative logo path (change if needed)
-LOGO_PATH = r"C:\\Users\\Lenovo\\OneDrive - BONHOEFFER MACHINES PRIVATE LIMITED\\Dasboard.P.S\\logo-B 2.png"
+# ── Paths ────────────────────────────────────────────────────────────────────
+APP_DIR   = Path(__file__).resolve().parent
+ASSETS    = APP_DIR / "assets"
+STATICDIR = APP_DIR / ".streamlit" / "static"
 
+# prefer this name; keep it in repo (case-sensitive on GitHub)
+PREFERRED_LOGO = ASSETS / "bonhoeffer-logo.png"
 
 # ====== Simple Auth (in-memory) ==============================================
 def _hash(p: str) -> str:
@@ -31,23 +35,46 @@ def logout():
         st.session_state.pop(k, None)
     st.rerun()
 
+# ── Logo loader (robust for GitHub / Linux) ───────────────────────────────────
+def _load_logo_bytes() -> tuple[bytes | None, str | None]:
+    # explicit candidates first
+    candidates = [
+        PREFERRED_LOGO,
+        ASSETS / "bonhoeffer_logo.png",
+        ASSETS / "logo.png",
+        ASSETS / "logo-b-2.png",
+        ASSETS / "logo-B 2.png",
+        STATICDIR / "bonhoeffer-logo.png",
+    ]
+    for p in candidates:
+        if p.exists():
+            return p.read_bytes(), str(p)
+
+    # fallback: search repo for *logo*.* (case-insensitive)
+    exts = {".png", ".jpg", ".jpeg", ".webp", ".svg"}
+    for p in APP_DIR.rglob("*"):
+        if "logo" in p.name.lower() and p.suffix.lower() in exts:
+            try:
+                return p.read_bytes(), str(p)
+            except Exception:
+                pass
+    return None, None
+
 # ── Brand header (CENTERED: logo + big title) ────────────────────────────────
-def brandbar(title: str = "Bonhoeffer Machines", logo_path: Path = LOGO_PATH):
-    # encode logo (optional)
-    logo_b64 = ""
-    p = Path(logo_path)
-    if p.exists():
-        with open(p, "rb") as f:
-            logo_b64 = base64.b64encode(f.read()).decode("utf-8")
-    logo_img = f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>" if logo_b64 else ""
-    # single-line HTML (no leading spaces → not rendered as code on GitHub)
-    html = f"<div class='brandwrap'>{logo_img}<h1 class='brandname'>{title}</h1></div>"
-    st.markdown(html, unsafe_allow_html=True)  # do NOT wrap with st.write()/st.code()
+def brandbar(title: str = "Bonhoeffer Machines"):
+    logo_b, src = _load_logo_bytes()
+    logo_b64 = base64.b64encode(logo_b).decode("utf-8") if logo_b else ""
+    img = f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>" if logo_b64 else ""
+    html = f"<div class='brandwrap'>{img}<h1 class='brandname'>{title}</h1></div>"
+    st.markdown(html, unsafe_allow_html=True)
+    # debug toggle: set True to see where it loaded from
+    DEBUG = False
+    if DEBUG:
+        st.caption(f"Logo source: {src or 'NOT FOUND'}")
 
 # ── Styles (Login dark) ───────────────────────────────────────────────────────
 LOGIN_DARK_CSS = """
 <style>
-/* remove header/toolbar/decoration space */
 [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"],
 button[kind="header"], .stDeployButton { display:none !important; }
 main .block-container{ padding-top:8px !important; }
@@ -75,7 +102,7 @@ main .block-container{ padding-top:8px !important; }
   text-align:center;
 }
 .brandlogo{
-  height:100px;            /* adjust for bigger/smaller logo */
+  height:100px;
   width:auto;
   object-fit:contain;
   border-radius:12px;
@@ -94,7 +121,7 @@ main .block-container{ padding-top:8px !important; }
   .brandname{ font-size:2rem; }
 }
 
-/* ===== remove the stray dark strip under brand ===== */
+/* remove stray dark strip under brand */
 .brandwrap + div:not(.login-card){ display:none !important; }
 .brandwrap + div:empty{ display:none !important; }
 main .block-container hr,
@@ -130,14 +157,12 @@ label{ color:#cbd5e1 !important; }
 # ── Styles (Post-login app + sidebar gradient) ────────────────────────────────
 APP_LIGHT_CSS = """
 <style>
-/* Header clean */
 [data-testid="stHeader"]{ background:transparent !important; box-shadow:none !important; }
-/* MAIN (right) background */
 [data-testid="stAppViewContainer"]{
   background: linear-gradient(90deg,#B9F5C8 0%, #C3F0DD 30%, #CDE7F1 65%, #B8D2FF 100%) !important;
   background-attachment: fixed !important;
 }
-/* Table glass */
+/* table glass */
 .stDataFrame table{
   background: rgba(255,255,255,.18) !important; backdrop-filter: blur(4px) !important;
   border-radius: 8px !important;
@@ -158,7 +183,6 @@ aside[data-testid="stSidebar"]::before, section[data-testid="stSidebar"]::before
 aside[data-testid="stSidebar"] *, section[data-testid="stSidebar"] *{
   background: transparent !important; background-color: transparent !important;
 }
-/* right edge divider */
 aside[data-testid="stSidebar"]::after, section[data-testid="stSidebar"]::after{
   content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
   background: linear-gradient(to bottom,rgba(255,255,255,.70),rgba(255,255,255,.35),rgba(255,255,255,.70));
@@ -232,6 +256,7 @@ with sb:
 # =========================
 # secondary_sheets WILL START BELOW THIS LINE
 # =========================
+
 
 
 
