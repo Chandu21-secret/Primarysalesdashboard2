@@ -5,7 +5,7 @@ import hashlib, base64, os
 
 # ── App config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
-LOGO_PATH = "assets/bonhoeffer-logo.png"  # <- apna path/naam de sakte ho
+LOGO_PATH = ""C:\Users\Lenovo\OneDrive - BONHOEFFER MACHINES PRIVATE LIMITED\Dasboard.P.S\logo-B 2.png"" 
 
 # ====== Simple Auth (in-memory) ==============================================
 def _hash(p: str) -> str:
@@ -356,4 +356,5 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
