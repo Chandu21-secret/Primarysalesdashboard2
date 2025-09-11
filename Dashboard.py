@@ -8,16 +8,16 @@ st.set_page_config(page_title="Sales Dashboard", layout="wide")
 # ── Styles ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* ===== Reset header whites ===== */
+/* —— Reset header whites —— */
 [data-testid="stHeader"], [data-testid="stToolbar"]{
   background: transparent !important;
   box-shadow: none !important;
 }
 
-/* ===== MAIN (right) — mint → sky blue exactly like screenshot ===== */
+/* —— MAIN (right) background: mint → sky blue —— */
 [data-testid="stAppViewContainer"]{
   background: linear-gradient(90deg,
-              #B9F5C8 0%,   /* mint green left */
+              #B9F5C8 0%,   /* mint left */
               #C3F0DD 30%,
               #CDE7F1 65%,
               #B8D2FF 100%  /* light sky blue right */
@@ -26,25 +26,65 @@ st.markdown("""
   background-attachment: fixed !important;
 }
 
-/* ===== SIDEBAR (left) — pale teal → royal blue like screenshot ===== */
-aside[data-testid="stSidebar"]{
+/* —— SIDEBAR (left) background: blue → white —— */
+aside[data-testid="stSidebar"], [data-testid="stSidebar"]{
   background: linear-gradient(180deg,
-              #DFF6FF 0%,
-              #B8D3FF 45%,
-              #7FAAFF 75%,
-              #3D6CFF 100%
+              #3D6CFF 0%,    /* deep blue top */
+              #7FAAFF 40%,   /* mid blue */
+              #B8D3FF 75%,   /* light blue */
+              #FFFFFF 100%   /* white bottom */
             ) !important;
 }
 
-/* Sidebar inner panel transparent so same gradient dikhe */
+/* Sidebar inner wrapper transparent so gradient shows */
 .stSidebar .sidebar-content{
   background: transparent !important;
-  backdrop-filter: blur(8px) !important;   /* optional glassy feel */
+  backdrop-filter: blur(8px) !important;  /* subtle glass effect */
   border-radius: 12px !important;
 }
 
-/* Optional: thoda top padding tight */
-.main .block-container{ padding-top: .8rem; }
+/* —— Optional: thin divider between sidebar & main —— */
+aside[data-testid="stSidebar"]{ position: relative; }
+aside[data-testid="stSidebar"]::after{
+  content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
+  background: linear-gradient(to bottom,
+              rgba(255,255,255,.70),
+              rgba(255,255,255,.35),
+              rgba(255,255,255,.70));
+  pointer-events:none;
+}
+
+/* —— Typography & spacing —— */
+.stApp, .stApp *{ color:#222 !important; }
+h1{ font-size:2.4rem !important; text-align:center; margin:.6rem 0 1.0rem; }
+h2{ color:#334155 !important; font-size:1.6rem !important; }
+.main .block-container{ padding-top:.8rem; }
+
+/* —— Inputs —— */
+.stButton>button{
+  background:#66a6ff !important; color:#fff !important; border:none !important;
+  border-radius:6px !important; padding:.45em 1.1em !important;
+  transition: background .2s !important;
+}
+.stButton>button:hover{ background:#89f7fe !important; }
+
+.stSelectbox select, select{
+  -webkit-appearance:none; appearance:none; background:#fff !important; color:#222 !important;
+  border:none !important; border-radius:8px !important; padding:.55em 1em !important;
+  box-shadow:0 2px 6px rgba(0,0,0,.1) !important; cursor:pointer !important;
+  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23222'/%3E%3C/svg%3E");
+  background-repeat:no-repeat !important; background-position:right .9em center !important;
+}
+.stSelectbox select:hover, select:hover{ box-shadow:0 3px 8px rgba(0,0,0,.15) !important; }
+.stSelectbox select:focus, select:focus{ outline:none !important; box-shadow:0 0 0 3px rgba(102,166,255,.4) !important; }
+
+/* —— Tables: light glass panel —— */
+.stDataFrame table{
+  background: rgba(255,255,255,.18) !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: 8px !important;
+}
+.stDataFrame th, .stDataFrame td{ color:#222 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -223,6 +263,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
