@@ -3,105 +3,40 @@ import pandas as pd
 import requests
 
 # ─── App Configuration ─────────────────────────────────────────────────────────
-# Best practice: set_page_config sabse pehle
-st.set_page_config(page_title="Sales Dashboard", layout="wide")
-
-# ─── Styles ───────────────────────────────────────────────────────────────────
 st.markdown("""
     <style>
-    /* 1) Smooth animated gradient background */
-    @keyframes bgMove {
-        0%   { background-position: 0% 50%; }
-        100% { background-position: 100% 50%; }
-    }
+    @keyframes bgMove { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
     .stApp {
         background: linear-gradient(270deg, #89f7fe, #66a6ff, #c2e9fb, #84fab0);
         background-size: 200% 200%;
         animation: bgMove 15s ease infinite !important;
     }
-
-    /* 2) All text dark gray for readability */
-    .stApp, .stApp * {
-        color: #222 !important;
-    }
-
-    /* 3) Glassmorphic sidebar */
+    .stApp, .stApp * { color:#222 !important; }
     .stSidebar .sidebar-content {
         background: rgba(255,255,255,0.25) !important;
         backdrop-filter: blur(8px) !important;
         border-radius: 12px !important;
     }
-
-    /* 4) Button styling */
-    .stButton>button {
-        background: #66a6ff !important;
-        color: #fff !important;
-        border: none !important;
-        border-radius: 6px !important;
-        padding: 0.4em 1.2em !important;
-        transition: background 0.2s !important;
+    .stButton>button{
+        background:#66a6ff !important;color:#fff !important;border:none !important;border-radius:6px !important;
+        padding:0.4em 1.2em !important;transition:background .2s !important;
     }
-    .stButton>button:hover {
-        background: #89f7fe !important;
+    .stButton>button:hover{ background:#89f7fe !important; }
+    .stSelectbox select, select{
+        -webkit-appearance:none; -moz-appearance:none; appearance:none;
+        background:#fff !important; color:#222 !important; border:none !important; border-radius:8px !important;
+        padding:.5em 1em !important; font-size:1rem !important; box-shadow:0 2px 6px rgba(0,0,0,.1) !important;
+        cursor:pointer !important;
+        background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23222'/%3E%3C/svg%3E");
+        background-repeat:no-repeat !important; background-position:right 1em center !important;
     }
-
-    /* 5) Attractive single‐color dropdown */
-    .stSelectbox select,
-    select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-
-        background-color: #ffffff !important;
-        color: #222222 !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 0.5em 1em !important;
-        font-size: 1rem !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-        cursor: pointer !important;
-
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23222'/%3E%3C/svg%3E");
-        background-repeat: no-repeat !important;
-        background-position: right 1em center !important;
-    }
-    .stSelectbox select:hover,
-    select:hover {
-        box-shadow: 0 3px 8px rgba(0,0,0,0.15) !important;
-    }
-    .stSelectbox select:focus,
-    select:focus {
-        outline: none !important;
-        box-shadow: 0 0 0 3px rgba(102,166,255,0.4) !important;
-    }
-    .stSelectbox option,
-    option {
-        background-color: #fff !important;
-        color: #222 !important;
-        padding: 0.4em !important;
-    }
-
-    /* 6) Header styling */
-    h1 {
-        font-size: 2.4rem !important;
-        text-align: center;
-        margin-bottom: 0.5em;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-    }
-    h2 {
-        color: #334155 !important;
-        font-size: 1.6rem !important;
-    }
-
-    /* 7) DataFrame background */
-    .stDataFrame table {
-        background: rgba(255,255,255,0.2) !important;
-        backdrop-filter: blur(4px) !important;
-        border-radius: 8px !important;
-    }
-    .stDataFrame th, .stDataFrame td {
-        color: #222 !important;
-    }
+    .stSelectbox select:hover, select:hover{ box-shadow:0 3px 8px rgba(0,0,0,.15) !important; }
+    .stSelectbox select:focus, select:focus{ outline:none !important; box-shadow:0 0 0 3px rgba(102,166,255,.4) !important; }
+    .stSelectbox option, option{ background:#fff !important; color:#222 !important; padding:.4em !important; }
+    h1{ font-size:2.4rem !important; text-align:center; margin-bottom:.5em; text-shadow:1px 1px 2px rgba(0,0,0,.2); }
+    h2{ color:#334155 !important; font-size:1.6rem !important; }
+    .stDataFrame table{ background:rgba(255,255,255,.2) !important; backdrop-filter:blur(4px) !important; border-radius:8px !important; }
+    .stDataFrame th, .stDataFrame td{ color:#222 !important; }
     </style>
 """, unsafe_allow_html=True)
 # ─── Heading ───────────────────────────────────────────────────────────────────
@@ -284,6 +219,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 # ─── Secondary Sales / Incoming (disabled) ─────────────────────────────────────
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.info("🚧 Secondary Sales / Incoming is disabled. Please select 'Outgoing'.")
+
 
 
 
