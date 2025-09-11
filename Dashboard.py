@@ -1,9 +1,89 @@
 import streamlit as st
 import pandas as pd
 import requests
+import hashlib
 
 # ── App config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
+
+# ====== Simple Auth (in-memory) ==============================================
+# NOTE: Production me is list ko st.secrets ya DB se load karna better hoga.
+def _hash(p: str) -> str:
+    return hashlib.sha256(p.encode("utf-8")).hexdigest()
+
+USERS = {
+    # username (lowercase) : sha256(password)
+    "aniket": _hash("admin@123"),
+    "rohit":  _hash("rohit@123"),
+    "rahul":  _hash("rahul@123"),
+    "ashwin": _hash("ashwin@123"),
+    "deepak": _hash("deepak@123"),
+    # add more...
+}
+
+def logged_in() -> bool:
+    return st.session_state.get("auth_ok") is True
+
+def logout():
+    for k in ["auth_ok", "user"]:
+        if k in st.session_state:
+            del st.session_state[k]
+    st.rerun()
+
+def login_view():
+    # Background + header stays same; just show login card
+    st.markdown("""
+    <style>
+      .login-card{
+        max-width: 520px; margin: 8vh auto; padding: 28px 24px;
+        background: rgba(255,255,255,.85); backdrop-filter: blur(10px);
+        border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.15);
+      }
+      .login-card h2{ text-align:center; margin:0 0 12px; }
+      .login-card p{ text-align:center; margin:0 0 18px; color:#334155; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="login-card">', unsafe_allow_html=True)
+    st.markdown("<h2>🔐 Team Login</h2><p>Please sign in to continue</p>", unsafe_allow_html=True)
+
+    with st.form("login_form", clear_on_submit=False):
+        col1, col2 = st.columns(2)
+        with col1:
+            username = st.text_input("User Name").strip()
+            designation = st.selectbox(
+                "Designation",
+                ["Software Developer", "Sales Executive", "Manager", "Intern", "Other"],
+                index=0,
+            )
+        with col2:
+            department = st.selectbox(
+                "Department",
+                ["Sales", "Marketing", "GSP", "Operations", "HR", "IT", "Finance", "Other"],
+                index=0,
+            )
+            password = st.text_input("Password", type="password")
+
+        submit = st.form_submit_button("Login")
+
+    if submit:
+        if not username or not password:
+            st.error("Please enter both username and password.")
+        else:
+            key = username.lower()
+            if key in USERS and USERS[key] == _hash(password):
+                st.session_state["auth_ok"] = True
+                st.session_state["user"] = {
+                    "username": username,
+                    "designation": designation,
+                    "department": department,
+                }
+                st.success("Login successful! Redirecting…")
+                st.rerun()
+            else:
+                st.error("Invalid credentials. Please try again.")
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ── Styles ────────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -17,10 +97,10 @@ st.markdown("""
 /* —— MAIN (right) background: mint → sky blue —— */
 [data-testid="stAppViewContainer"]{
   background: linear-gradient(90deg,
-              #B9F5C8 0%,   /* mint left */
+              #B9F5C8 0%,
               #C3F0DD 30%,
               #CDE7F1 65%,
-              #B8D2FF 100%  /* light sky blue right */
+              #B8D2FF 100%
             ) !important;
   background-size: 100% 100% !important;
   background-attachment: fixed !important;
@@ -29,21 +109,21 @@ st.markdown("""
 /* —— SIDEBAR (left) background: blue → white —— */
 aside[data-testid="stSidebar"], [data-testid="stSidebar"]{
   background: linear-gradient(180deg,
-              #3D6CFF 0%,    /* deep blue top */
-              #7FAAFF 40%,   /* mid blue */
-              #B8D3FF 75%,   /* light blue */
-              #FFFFFF 100%   /* white bottom */
+              #3D6CFF 0%,
+              #7FAAFF 40%,
+              #B8D3FF 75%,
+              #FFFFFF 100%
             ) !important;
 }
 
 /* Sidebar inner wrapper transparent so gradient shows */
 .stSidebar .sidebar-content{
   background: transparent !important;
-  backdrop-filter: blur(8px) !important;  /* subtle glass effect */
+  backdrop-filter: blur(8px) !important;
   border-radius: 12px !important;
 }
 
-/* —— Optional: thin divider between sidebar & main —— */
+/* —— Thin divider —— */
 aside[data-testid="stSidebar"]{ position: relative; }
 aside[data-testid="stSidebar"]::after{
   content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
@@ -88,9 +168,21 @@ h2{ color:#334155 !important; font-size:1.6rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
+# ── If not logged in: show login and stop ─────────────────────────────────────
+if not logged_in():
+    login_view()
+    st.stop()
 
 # ── Title (RIGHT) ─────────────────────────────────────────────────────────────
 st.title("📊 Sales Dashboard – Primary & Secondary")
+
+# Show user badge + logout in sidebar
+sb = st.sidebar
+u = st.session_state.get("user", {})
+with sb:
+    st.markdown(f"**👋 Logged in as:** {u.get('username','')}  \n"
+                f"**{u.get('designation','')} – {u.get('department','')}**")
+    st.button("Logout", on_click=logout, type="secondary")
 
 # ── Data sources ───────────────────────────────────────────────────────────────
 secondary_sheets = {
@@ -118,14 +210,9 @@ secondary_sheets = {
         "https://docs.google.com/spreadsheets/d/1Mxu810CoTJaQdJHUFPPzUnRd9ncGDK2V8wNAwpmf3bg/export?format=csv",
         "https://docs.google.com/spreadsheets/d/1wPyc1LZVaVNgIrUJy5oRqj-JvpyIYqyhJ5pvgNnJano/export?format=csv"
      ],
-
      "Uruguay":[
         "https://docs.google.com/spreadsheets/d/1S3tCmjy5rXj4KrDuaejDEPK-Kquf5dz3IUq2Bs67DY0/export?format=csv"
      ]
-
-    
-  
-               
 }
 secondary_segments = {
     "Mexico":   ["Gardening","Powertools","GSP"],
@@ -135,7 +222,6 @@ secondary_segments = {
     "Nicaragua":["Gardening"],
     "Jamaica":["Gardening","GSP"],
     "Uruguay":["Powertools"]
-
 }
 
 sheet_id = "1u06bqzGn8HtsvOOde30bvVdsXJfvvmfHiy1m1pDhtPA"
@@ -154,7 +240,6 @@ primary_outgoing = {
     "Deepak": "https://docs.google.com/spreadsheets/d/14vR6FE01iC2hVweBiY1vjGpvVHnCDSSERDNXiRGZyoI/export?format=csv",
     "Master Data":"https://docs.google.com/spreadsheets/d/1bzyOX9uIMwoTgZhTd_aiapj4ZzsEvCut2mOV5T9zBQw/export?format=csv&gid=0"
 }
-
 outgoing_sheets_map = {
     "Deepak": {
         "Brazil":"https://docs.google.com/spreadsheets/d/14vR6FE01iC2hVweBiY1vjGpvVHnCDSSERDNXiRGZyoI/export?format=csv&gid=0",
@@ -198,12 +283,8 @@ outgoing_sheets_map = {
 }
 
 # ── Sidebar controls (LEFT) ────────────────────────────────────────────────────
-sb = st.sidebar
 sb.header("Controls")
-
 sales_type = sb.radio("Select Sales Type:", ["Primary Sales", "Secondary Sales"], key="sales_type_radio")
-
-# Primary: default Incoming; Secondary: default Outgoing (but both visible)
 if sales_type == "Primary Sales":
     trans_type = sb.radio("Select Transaction Type:", ["Incoming", "Outgoing"], index=0, key="primary_trans_type")
 else:
@@ -237,7 +318,6 @@ elif sales_type == "Primary Sales" and trans_type == "Outgoing":
         except Exception as e:
             st.error(f"❌ Could not load '{country}': {e}")
     else:
-        # Fallback: auto-list tabs for this person's sheet
         import re, json
         raw_url  = primary_outgoing[person]
         sid      = re.search(r"/d/([a-zA-Z0-9-_]+)", raw_url).group(1)
@@ -245,7 +325,7 @@ elif sales_type == "Primary Sales" and trans_type == "Outgoing":
         try:
             resp = requests.get(meta_url); resp.raise_for_status()
             raw  = resp.text
-            j    = json.loads(raw[raw.find("{"): raw.rfind("}")+1])
+            j    = json.loads(raw[raw.find('{'): raw.rfind('}')+1])
             tabs = [(s["properties"]["title"], s["properties"]["sheetId"]) for s in j["sheets"]]
             for title, gid in tabs:
                 url = f"https://docs.google.com/spreadsheets/d/{sid}/export?format=csv&gid={gid}"
@@ -258,7 +338,7 @@ elif sales_type == "Primary Sales" and trans_type == "Outgoing":
         except Exception as e:
             st.error(f"Metadata fetch failed: {e}")
 
-# Secondary / Outgoing (DATA HERE)
+# Secondary / Outgoing
 elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
     country = sb.selectbox("🌍 Select Country:", list(secondary_sheets.keys()))
     links   = secondary_sheets[country]
@@ -278,10 +358,3 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
-
-
-
-
-
-
-
