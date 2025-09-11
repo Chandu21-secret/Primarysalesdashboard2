@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
-import hashlib, base64, os
+import hashlib, base64
 from pathlib import Path
 
 # ── App config ────────────────────────────────────────────────────────────────
@@ -16,7 +16,7 @@ def _hash(p: str) -> str:
     return hashlib.sha256(p.encode("utf-8")).hexdigest()
 
 USERS = {
-    "chandan": _hash("admin@123"),
+    "aniket": _hash("admin@123"),
     "rohit":  _hash("rohit@123"),
     "rahul":  _hash("rahul@123"),
     "ashwin": _hash("ashwin@123"),
@@ -33,23 +33,18 @@ def logout():
 
 # ── Brand header (CENTERED: logo + big title) ────────────────────────────────
 def brandbar(title: str = "Bonhoeffer Machines", logo_path: Path = LOGO_PATH):
+    # encode logo (optional)
     logo_b64 = ""
     p = Path(logo_path)
     if p.exists():
         with open(p, "rb") as f:
             logo_b64 = base64.b64encode(f.read()).decode("utf-8")
-    logo_img = (
-        f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>"
-        if logo_b64 else ""
-    )
-    st.markdown(f"""
-    <div class="brandwrap">
-        {logo_img}
-        <h1 class="brandname">{title}</h1>
-    </div>
-    """, unsafe_allow_html=True)
+    logo_img = f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>" if logo_b64 else ""
+    # single-line HTML (no leading spaces → not rendered as code on GitHub)
+    html = f"<div class='brandwrap'>{logo_img}<h1 class='brandname'>{title}</h1></div>"
+    st.markdown(html, unsafe_allow_html=True)  # do NOT wrap with st.write()/st.code()
 
-# ── Styles (Login dark + App light) ───────────────────────────────────────────
+# ── Styles (Login dark) ───────────────────────────────────────────────────────
 LOGIN_DARK_CSS = """
 <style>
 /* remove header/toolbar/decoration space */
@@ -99,7 +94,7 @@ main .block-container{ padding-top:8px !important; }
   .brandname{ font-size:2rem; }
 }
 
-/* ===== kill the stray dark strip under the brand ===== */
+/* ===== remove the stray dark strip under brand ===== */
 .brandwrap + div:not(.login-card){ display:none !important; }
 .brandwrap + div:empty{ display:none !important; }
 main .block-container hr,
@@ -114,7 +109,6 @@ main .block-container [role="separator"]{ display:none !important; }
 }
 .login-card h2{ color:#e5e7eb; margin:0 0 4px; }
 .login-card p{ color:#94a3b8; margin:0 0 16px; }
-
 .stTextInput>div>div>input, .stPassword>div>div>input{
   background:#0f172a !important; color:#e5e7eb !important;
   border:1px solid #243144 !important; border-radius:10px !important;
@@ -124,7 +118,6 @@ main .block-container [role="separator"]{ display:none !important; }
   border:1px solid #243144 !important; border-radius:10px !important;
 }
 label{ color:#cbd5e1 !important; }
-
 .stButton>button{
   background: linear-gradient(90deg,#2563eb,#06b6d4) !important;
   color:#fff !important; border:none !important; border-radius:10px !important;
@@ -134,49 +127,17 @@ label{ color:#cbd5e1 !important; }
 </style>
 """
 
+# ── Styles (Post-login app + sidebar gradient) ────────────────────────────────
 APP_LIGHT_CSS = """
 <style>
 /* Header clean */
 [data-testid="stHeader"]{ background:transparent !important; box-shadow:none !important; }
-
 /* MAIN (right) background */
 [data-testid="stAppViewContainer"]{
   background: linear-gradient(90deg,#B9F5C8 0%, #C3F0DD 30%, #CDE7F1 65%, #B8D2FF 100%) !important;
   background-attachment: fixed !important;
 }
-
-/* ==== SIDEBAR (left) : blue → white gradient ==== */
-aside[data-testid="stSidebar"]{
-  background: linear-gradient(180deg,
-              #3D6CFF 0%,
-              #7FAAFF 40%,
-              #B8D3FF 75%,
-              #FFFFFF 100%) !important;
-  min-height: 100vh;         /* gradient full height */
-  position: relative;
-}
-
-/* Make all inner wrappers transparent so gradient shows */
-aside[data-testid="stSidebar"] > div,
-aside[data-testid="stSidebar"] [data-testid="stSidebarContent"],
-aside[data-testid="stSidebar"] [data-testid="stSidebarUserContent"],
-aside[data-testid="stSidebar"] [data-testid="stVerticalBlock"],
-aside[data-testid="stSidebar"] *{
-  background: transparent !important;
-  background-color: transparent !important;
-}
-
-/* Optional: subtle divider line on right edge */
-aside[data-testid="stSidebar"]::after{
-  content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
-  background: linear-gradient(to bottom,
-              rgba(255,255,255,.70),
-              rgba(255,255,255,.35),
-              rgba(255,255,255,.70));
-  pointer-events:none;
-}
-
-/* Table glass (same as before) */
+/* Table glass */
 .stDataFrame table{
   background: rgba(255,255,255,.18) !important; backdrop-filter: blur(4px) !important;
   border-radius: 8px !important;
@@ -184,13 +145,37 @@ aside[data-testid="stSidebar"]::after{
 </style>
 """
 
+# Force sidebar gradient across builds
+SIDEBAR_FORCE_CSS = """
+<style>
+:root{ --sb-grad: linear-gradient(180deg,#3D6CFF 0%,#7FAAFF 40%,#B8D3FF 75%,#FFFFFF 100%); }
+aside[data-testid="stSidebar"], section[data-testid="stSidebar"]{
+  background: transparent !important; position: relative; min-height: 100vh; overflow: visible !important;
+}
+aside[data-testid="stSidebar"]::before, section[data-testid="stSidebar"]::before{
+  content:""; position:absolute; inset:0; background: var(--sb-grad) !important; z-index: 0;
+}
+aside[data-testid="stSidebar"] *, section[data-testid="stSidebar"] *{
+  background: transparent !important; background-color: transparent !important;
+}
+/* right edge divider */
+aside[data-testid="stSidebar"]::after, section[data-testid="stSidebar"]::after{
+  content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
+  background: linear-gradient(to bottom,rgba(255,255,255,.70),rgba(255,255,255,.35),rgba(255,255,255,.70));
+  z-index: 1; pointer-events:none;
+}
+</style>
+"""
 
-
+def inject_post_login_styles():
+    st.markdown(APP_LIGHT_CSS, unsafe_allow_html=True)
+    st.markdown(SIDEBAR_FORCE_CSS, unsafe_allow_html=True)
+    st.sidebar.markdown(SIDEBAR_FORCE_CSS, unsafe_allow_html=True)
 
 # ── Login view ────────────────────────────────────────────────────────────────
 def login_view():
     st.markdown(LOGIN_DARK_CSS, unsafe_allow_html=True)
-    brandbar()  # Bonhoeffer Machines + centered big logo
+    brandbar()  # Centered logo + title
 
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown("<h2>🔐 Team Login</h2><p>Please sign in to continue</p>", unsafe_allow_html=True)
@@ -234,7 +219,7 @@ if not logged_in():
     st.stop()
 
 # ── Post-login top UI (title + sidebar) ───────────────────────────────────────
-st.markdown(APP_LIGHT_CSS, unsafe_allow_html=True)
+inject_post_login_styles()
 st.title("📊 Sales Dashboard – Primary & Secondary")
 
 sb = st.sidebar
@@ -247,6 +232,7 @@ with sb:
 # =========================
 # secondary_sheets WILL START BELOW THIS LINE
 # =========================
+
 
 
 
