@@ -1,24 +1,22 @@
 import streamlit as st
 import pandas as pd
 import requests
-import hashlib
+import hashlib, base64, os
 
 # ── App config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
+LOGO_PATH = "assets/bonhoeffer-logo.png"  # << change if needed
 
 # ====== Simple Auth (in-memory) ==============================================
-# NOTE: Production me is list ko st.secrets ya DB se load karna better hoga.
 def _hash(p: str) -> str:
     return hashlib.sha256(p.encode("utf-8")).hexdigest()
 
 USERS = {
-    # username (lowercase) : sha256(password)
     "aniket": _hash("admin@123"),
     "rohit":  _hash("rohit@123"),
     "rahul":  _hash("rahul@123"),
     "ashwin": _hash("ashwin@123"),
     "deepak": _hash("deepak@123"),
-    # add more...
 }
 
 def logged_in() -> bool:
@@ -26,23 +24,118 @@ def logged_in() -> bool:
 
 def logout():
     for k in ["auth_ok", "user"]:
-        if k in st.session_state:
-            del st.session_state[k]
+        st.session_state.pop(k, None)
     st.rerun()
 
-def login_view():
-    # Background + header stays same; just show login card
-    st.markdown("""
-    <style>
-      .login-card{
-        max-width: 520px; margin: 8vh auto; padding: 28px 24px;
-        background: rgba(255,255,255,.85); backdrop-filter: blur(10px);
-        border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.15);
-      }
-      .login-card h2{ text-align:center; margin:0 0 12px; }
-      .login-card p{ text-align:center; margin:0 0 18px; color:#334155; }
-    </style>
+# ── Brand header (name + logo) ───────────────────────────────────────────────
+def brandbar(title: str = "Bonhoeffer Machines", logo_path: str = LOGO_PATH):
+    logo_b64 = ""
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            logo_b64 = base64.b64encode(f.read()).decode("utf-8")
+    img_tag = (f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>"
+               if logo_b64 else "")
+    st.markdown(f"""
+    <div class="brandbar">
+        {img_tag}
+        <span class="brandname">{title}</span>
+    </div>
     """, unsafe_allow_html=True)
+
+# ── Styles (two modes) ───────────────────────────────────────────────────────
+LOGIN_DARK_CSS = """
+<style>
+/* remove top blank space / pill */
+[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"]{
+  display:none !important;
+}
+main .block-container{ padding-top: 8px !important; }
+
+/* dark background */
+[data-testid="stAppViewContainer"]{
+  background:
+    radial-gradient(1000px 500px at -10% -10%, #0b1220 20%, transparent 60%),
+    radial-gradient(900px 500px at 110% -10%, #0b1220 20%, transparent 60%),
+    linear-gradient(90deg,#0f172a 0%, #0c1a2b 50%, #0b1322 100%) !important;
+  color:#e5e7eb !important;
+}
+
+/* brand bar */
+.brandbar{
+  width: max-content; margin: 10px auto 18px; padding: 10px 16px;
+  display:flex; align-items:center; gap:12px;
+  background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+.brandlogo{ width:42px; height:42px; border-radius:10px; object-fit:contain; }
+.brandname{ font-weight:700; font-size:1.5rem; letter-spacing:.3px; color:#e5e7eb; }
+
+/* login card */
+.login-card{
+  max-width: 880px; margin: 8px auto 24px; padding: 22px 22px;
+  background: rgba(3,7,18,.75); backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,.08); border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.45);
+}
+.login-card h2{ color:#e5e7eb; margin:0 0 4px; }
+.login-card p{ color:#94a3b8; margin:0 0 16px; }
+
+/* inputs dark */
+.stTextInput>div>div>input,
+.stPassword>div>div>input{
+  background:#0f172a !important; color:#e5e7eb !important;
+  border:1px solid #243144 !important; border-radius:10px !important;
+}
+.stSelectbox div[data-baseweb="select"]>div{
+  background:#0f172a !important; color:#e5e7eb !important;
+  border:1px solid #243144 !important; border-radius:10px !important;
+}
+label{ color:#cbd5e1 !important; }
+
+/* buttons */
+.stButton>button{
+  background: linear-gradient(90deg,#2563eb,#06b6d4) !important;
+  color:#fff !important; border:none !important; border-radius:10px !important;
+  padding:.55em 1.2em !important; box-shadow:0 8px 24px rgba(2,132,199,.35);
+}
+.stButton>button:hover{ filter:brightness(1.05); }
+</style>
+"""
+
+APP_LIGHT_CSS = """
+<style>
+/* tidy header look */
+[data-testid="stHeader"]{ background:transparent !important; box-shadow:none !important; }
+
+/* light gradient for main app (post-login) */
+[data-testid="stAppViewContainer"]{
+  background: linear-gradient(90deg,#B9F5C8 0%, #C3F0DD 30%, #CDE7F1 65%, #B8D2FF 100%) !important;
+  background-attachment: fixed !important;
+}
+
+/* sidebar gradient */
+aside[data-testid="stSidebar"]{
+  background: linear-gradient(180deg,#3D6CFF 0%, #7FAAFF 40%, #B8D3FF 75%, #FFFFFF 100%) !important;
+}
+.stSidebar .sidebar-content{ background:transparent !important; backdrop-filter: blur(8px) !important; border-radius: 12px !important; }
+aside[data-testid="stSidebar"]{ position:relative; }
+aside[data-testid="stSidebar"]::after{
+  content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
+  background: linear-gradient(to bottom,rgba(255,255,255,.70),rgba(255,255,255,.35),rgba(255,255,255,.70));
+}
+
+/* table glass */
+.stDataFrame table{
+  background: rgba(255,255,255,.18) !important; backdrop-filter: blur(4px) !important;
+  border-radius: 8px !important;
+}
+</style>
+"""
+
+# ── Login view ────────────────────────────────────────────────────────────────
+def login_view():
+    st.markdown(LOGIN_DARK_CSS, unsafe_allow_html=True)
+    brandbar()
 
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown("<h2>🔐 Team Login</h2><p>Please sign in to continue</p>", unsafe_allow_html=True)
@@ -53,17 +146,14 @@ def login_view():
             username = st.text_input("User Name").strip()
             designation = st.selectbox(
                 "Designation",
-                ["Software Developer", "Sales Executive", "Manager", "Intern", "Other"],
-                index=0,
+                ["Software Developer", "Sales Executive", "Manager", "Intern", "Other"], index=0,
             )
         with col2:
             department = st.selectbox(
                 "Department",
-                ["Sales", "Marketing", "GSP", "Operations", "HR", "IT", "Finance", "Other"],
-                index=0,
+                ["Sales", "Marketing", "GSP", "Operations", "HR", "IT", "Finance", "Other"], index=0,
             )
             password = st.text_input("Password", type="password")
-
         submit = st.form_submit_button("Login")
 
     if submit:
@@ -78,105 +168,22 @@ def login_view():
                     "designation": designation,
                     "department": department,
                 }
-                st.success("Login successful! Redirecting…")
                 st.rerun()
             else:
                 st.error("Invalid credentials. Please try again.")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ── Styles ────────────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-/* —— Reset header whites —— */
-[data-testid="stHeader"], [data-testid="stToolbar"]{
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-/* —— MAIN (right) background: mint → sky blue —— */
-[data-testid="stAppViewContainer"]{
-  background: linear-gradient(90deg,
-              #B9F5C8 0%,
-              #C3F0DD 30%,
-              #CDE7F1 65%,
-              #B8D2FF 100%
-            ) !important;
-  background-size: 100% 100% !important;
-  background-attachment: fixed !important;
-}
-
-/* —— SIDEBAR (left) background: blue → white —— */
-aside[data-testid="stSidebar"], [data-testid="stSidebar"]{
-  background: linear-gradient(180deg,
-              #3D6CFF 0%,
-              #7FAAFF 40%,
-              #B8D3FF 75%,
-              #FFFFFF 100%
-            ) !important;
-}
-
-/* Sidebar inner wrapper transparent so gradient shows */
-.stSidebar .sidebar-content{
-  background: transparent !important;
-  backdrop-filter: blur(8px) !important;
-  border-radius: 12px !important;
-}
-
-/* —— Thin divider —— */
-aside[data-testid="stSidebar"]{ position: relative; }
-aside[data-testid="stSidebar"]::after{
-  content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
-  background: linear-gradient(to bottom,
-              rgba(255,255,255,.70),
-              rgba(255,255,255,.35),
-              rgba(255,255,255,.70));
-  pointer-events:none;
-}
-
-/* —— Typography & spacing —— */
-.stApp, .stApp *{ color:#222 !important; }
-h1{ font-size:2.4rem !important; text-align:center; margin:.6rem 0 1.0rem; }
-h2{ color:#334155 !important; font-size:1.6rem !important; }
-.main .block-container{ padding-top:.8rem; }
-
-/* —— Inputs —— */
-.stButton>button{
-  background:#66a6ff !important; color:#fff !important; border:none !important;
-  border-radius:6px !important; padding:.45em 1.1em !important;
-  transition: background .2s !important;
-}
-.stButton>button:hover{ background:#89f7fe !important; }
-
-.stSelectbox select, select{
-  -webkit-appearance:none; appearance:none; background:#fff !important; color:#222 !important;
-  border:none !important; border-radius:8px !important; padding:.55em 1em !important;
-  box-shadow:0 2px 6px rgba(0,0,0,.1) !important; cursor:pointer !important;
-  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23222'/%3E%3C/svg%3E");
-  background-repeat:no-repeat !important; background-position:right .9em center !important;
-}
-.stSelectbox select:hover, select:hover{ box-shadow:0 3px 8px rgba(0,0,0,.15) !important; }
-.stSelectbox select:focus, select:focus{ outline:none !important; box-shadow:0 0 0 3px rgba(102,166,255,.4) !important; }
-
-/* —— Tables: light glass panel —— */
-.stDataFrame table{
-  background: rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(4px) !important;
-  border-radius: 8px !important;
-}
-.stDataFrame th, .stDataFrame td{ color:#222 !important; }
-</style>
-""", unsafe_allow_html=True)
-
-# ── If not logged in: show login and stop ─────────────────────────────────────
+# ── Gate: show login first ────────────────────────────────────────────────────
 if not logged_in():
     login_view()
     st.stop()
 
-# ── Title (RIGHT) ─────────────────────────────────────────────────────────────
-st.title("📊 Sales Dashboard – Primary & Secondary")
+# ── Post-login styles & UI ────────────────────────────────────────────────────
+st.markdown(APP_LIGHT_CSS, unsafe_allow_html=True)
 
-# Show user badge + logout in sidebar
+# Title + sidebar user badge + logout
+st.title("📊 Sales Dashboard – Primary & Secondary")
 sb = st.sidebar
 u = st.session_state.get("user", {})
 with sb:
@@ -282,16 +289,14 @@ outgoing_sheets_map = {
     }
 }
 
-# ── Sidebar controls (LEFT) ────────────────────────────────────────────────────
-sb.header("Controls")
+# ── Sidebar controls ──────────────────────────────────────────────────────────
 sales_type = sb.radio("Select Sales Type:", ["Primary Sales", "Secondary Sales"], key="sales_type_radio")
 if sales_type == "Primary Sales":
     trans_type = sb.radio("Select Transaction Type:", ["Incoming", "Outgoing"], index=0, key="primary_trans_type")
 else:
     trans_type = sb.radio("Select Transaction Type:", ["Incoming", "Outgoing"], index=1, key="secondary_trans_type")
 
-# ── Main content (RIGHT) ───────────────────────────────────────────────────────
-# Primary / Incoming
+# ── Main content ──────────────────────────────────────────────────────────────
 if sales_type == "Primary Sales" and trans_type == "Incoming":
     tab = sb.selectbox("📑 Select Primary Tab:", list(primary_tabs.keys()))
     csv_url = primary_tabs[tab]
@@ -302,11 +307,9 @@ if sales_type == "Primary Sales" and trans_type == "Incoming":
     except Exception as e:
         st.error(f"❌ Could not load '{tab}': {e}")
 
-# Primary / Outgoing
 elif sales_type == "Primary Sales" and trans_type == "Outgoing":
     st.subheader("🏷️ Primary Sales – Outgoing")
     person = sb.selectbox("👤 Select Salesperson:", list(primary_outgoing.keys()))
-
     if person in outgoing_sheets_map:
         country_dict = outgoing_sheets_map[person]
         country = sb.selectbox("🌍 Select Country:", list(country_dict.keys()))
@@ -338,7 +341,6 @@ elif sales_type == "Primary Sales" and trans_type == "Outgoing":
         except Exception as e:
             st.error(f"Metadata fetch failed: {e}")
 
-# Secondary / Outgoing
 elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
     country = sb.selectbox("🌍 Select Country:", list(secondary_sheets.keys()))
     links   = secondary_sheets[country]
@@ -354,7 +356,6 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
     except Exception as e:
         st.error(f"❌ Error loading '{sel}': {e}")
 
-# Secondary / Incoming (UNDER CONSTRUCTION)
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
