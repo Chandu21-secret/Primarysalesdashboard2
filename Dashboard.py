@@ -8,7 +8,8 @@ from pathlib import Path
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
 
 # Project-relative logo path (change if needed)
-LOGO_PATH = Path(r"C:\Users\Lenovo\OneDrive - BONHOEFFER MACHINES PRIVATE LIMITED\Dasboard.P.S\logo-B 2.png")
+LOGO_PATH = "C:/Users/Lenovo/OneDrive - BONHOEFFER MACHINES PRIVATE LIMITED/Dasboard.P.S/logo-B 2.png"
+
 
 
 # ====== Simple Auth (in-memory) ==============================================
@@ -419,6 +420,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
