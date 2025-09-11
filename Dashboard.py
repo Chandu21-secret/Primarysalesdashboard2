@@ -8,58 +8,34 @@ st.set_page_config(page_title="Sales Dashboard", layout="wide")
 # ── Styles ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* ——— 1) Single gradient variable ——— */
-:root{
-  --app-gradient: linear-gradient(270deg, #89f7fe, #66a6ff, #c2e9fb, #84fab0);
+/* —— Sidebar/Main separator line —— */
+aside[data-testid="stSidebar"]{
+  position: relative;
+}
+aside[data-testid="stSidebar"]::after{
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; right: 0;
+  width: 2px;
+  /* subtle vertical line */
+  background: linear-gradient(to bottom,
+              rgba(255,255,255,.70),
+              rgba(255,255,255,.35),
+              rgba(255,255,255,.70));
+  pointer-events: none;  /* no click issues */
 }
 
-/* Smooth animated gradient */
-@keyframes bgMove { 
-  0% { background-position: 0% 50%; } 
-  100% { background-position: 100% 50%; } 
+/* —— Optional: soft shadow on main edge for depth —— */
+[data-testid="stAppViewContainer"]{
+  box-shadow: inset 10px 0 18px -14px rgba(0,0,0,.35);
 }
 
-/* ——— 2) Apply SAME gradient everywhere ——— */
-html, body, .stApp, [data-testid="stAppViewContainer"]{
-  background: var(--app-gradient) !important;
-  background-size: 200% 200% !important;
-  background-attachment: fixed !important;
-  animation: bgMove 15s ease infinite !important;
-}
-
-/* Sidebar ko transparent rakho — same global gradient dikhega */
-aside[data-testid="stSidebar"], [data-testid="stSidebar"]{
-  background: transparent !important;
-}
+/* —— Optional: very light glass tint inside sidebar so area feels distinct —— */
 .stSidebar .sidebar-content{
-  background: transparent !important;     /* no white */
-  backdrop-filter: blur(10px) !important; /* subtle glass effect (optional) */
+  background: rgba(255,255,255,.06) !important;   /* keep gradient visible */
+  backdrop-filter: blur(8px) !important;
   border-radius: 12px !important;
 }
-
-/* Header/toolbar ki safedi hatao */
-header, [data-testid="stHeader"], [data-testid="stToolbar"]{
-  background: transparent !important;
-}
-
-/* Main container spacing */
-.main .block-container{ padding-top: .8rem; }
-
-/* (Optional) your existing input/table styles can remain */
-.stButton>button{
-  background:#66a6ff !important; color:#fff !important; border:none !important;
-  border-radius:6px !important; padding:.45em 1.1em !important;
-}
-.stButton>button:hover{ background:#89f7fe !important }
-.stSelectbox select, select{
-  -webkit-appearance:none; appearance:none; background:#fff !important; color:#222 !important;
-  border:none !important; border-radius:8px !important; padding:.55em 1em !important;
-  box-shadow:0 2px 6px rgba(0,0,0,.1) !important; cursor:pointer !important;
-  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23222'/%3E%3C/svg%3E");
-  background-repeat:no-repeat !important; background-position:right .9em center !important;
-}
-/* Table slight glass feel (optional) */
-.stDataFrame table{ background: rgba(255,255,255,.18) !important; backdrop-filter: blur(4px) !important; border-radius:8px !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -238,6 +214,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
