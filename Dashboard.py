@@ -8,23 +8,27 @@ st.set_page_config(page_title="Sales Dashboard", layout="wide")
 # ── Styles ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* Reuse the keyframes (in case not defined above) */
-@keyframes bgMove { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+/* ---- FULL-PAGE gradient already set; keep as-is ---- */
 
-/* 1) Make Streamlit header & toolbar transparent so no white band stays */
-[data-testid="stHeader"], header { background: transparent !important; }
-[data-testid="stToolbar"]       { background: transparent !important; }
-
-/* 2) Apply animated gradient to the ENTIRE page */
-html, body, .stApp, [data-testid="stAppViewContainer"]{
-  background: linear-gradient(270deg, #89f7fe, #66a6ff, #c2e9fb, #84fab0) !important;
+/* 1) Sidebar container par gradient */
+[data-testid="stSidebar"]{
+  background: linear-gradient(180deg,#cfe3ff 0%, #9bb8ff 45%, #5580ff 75%, #2f59d9 100%) !important;
   background-size: 200% 200% !important;
   background-attachment: fixed !important;
-  animation: bgMove 15s ease infinite !important;
 }
 
-/* 3) Optional: reduce top padding so content hugs the top nicely */
-.main .block-container { padding-top: 0.6rem; }
+/* 2) Sidebar inner wrapper ko transparent rakho (warna white dikhega) */
+.stSidebar .sidebar-content{
+  background: transparent !important;     /* was rgba(255,255,255,.18) */
+  backdrop-filter: blur(10px) !important; /* glass effect */
+  border-radius: 12px !important;
+}
+
+/* 3) Thoda spacing/height polish */
+[data-testid="stSidebar"] > div:first-child{ height:100%; padding-top:.5rem; }
+
+/* 4) Inputs same look; (optional) */
+.stSelectbox select, .stRadio, .stButton{ filter:none !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -203,4 +207,5 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
