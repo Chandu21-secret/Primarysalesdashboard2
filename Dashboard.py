@@ -2,17 +2,21 @@ import streamlit as st
 import pandas as pd
 import requests
 import hashlib, base64, os
+from pathlib import Path
 
 # ── App config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
-LOGO_PATH = "logo-B 2.png"
+
+# Project-relative logo path (change if needed)
+LOGO_PATH = r"C:\\Users\\Lenovo\\OneDrive - BONHOEFFER MACHINES PRIVATE LIMITED\\Dasboard.P.S\\logo-B 2.png"
+
 
 # ====== Simple Auth (in-memory) ==============================================
 def _hash(p: str) -> str:
     return hashlib.sha256(p.encode("utf-8")).hexdigest()
 
 USERS = {
-    "aniket": _hash("admin@123"),
+    "chandan": _hash("admin@123"),
     "rohit":  _hash("rohit@123"),
     "rahul":  _hash("rahul@123"),
     "ashwin": _hash("ashwin@123"),
@@ -27,11 +31,12 @@ def logout():
         st.session_state.pop(k, None)
     st.rerun()
 
-# ── Brand header (logo + big title) ──────────────────────────────────────────
-def brandbar(title: str = "Bonhoeffer Machines", logo_path: str = LOGO_PATH):
+# ── Brand header (CENTERED: logo + big title) ────────────────────────────────
+def brandbar(title: str = "Bonhoeffer Machines", logo_path: Path = LOGO_PATH):
     logo_b64 = ""
-    if os.path.exists(logo_path):
-        with open(logo_path, "rb") as f:
+    p = Path(logo_path)
+    if p.exists():
+        with open(p, "rb") as f:
             logo_b64 = base64.b64encode(f.read()).decode("utf-8")
     logo_img = (
         f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>"
@@ -47,12 +52,12 @@ def brandbar(title: str = "Bonhoeffer Machines", logo_path: str = LOGO_PATH):
 # ── Styles (Login dark + App light) ───────────────────────────────────────────
 LOGIN_DARK_CSS = """
 <style>
-/* remove top gaps/pills/toolbars */
+/* remove header/toolbar/decoration space */
 [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"],
 button[kind="header"], .stDeployButton { display:none !important; }
-main .block-container{ padding-top: 8px !important; }
+main .block-container{ padding-top:8px !important; }
 
-/* Dark bg */
+/* Dark background */
 [data-testid="stAppViewContainer"]{
   background:
     radial-gradient(1000px 500px at -10% -10%, #0b1220 20%, transparent 60%),
@@ -61,16 +66,44 @@ main .block-container{ padding-top: 8px !important; }
   color:#e5e7eb !important;
 }
 
-/* Brand */
+/* Kill any old pill/brandbar leftovers */
+.brandbar, .brandbar *{ display:none !important; }
+
+/* ===== Brand (CENTERED) ===== */
 .brandwrap{
-  margin: 6px 8px 14px;
-  display:flex; align-items:center; gap:14px;
+  width:100%;
+  margin:8px 0 12px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:18px;
+  text-align:center;
 }
-.brandlogo{ height:44px; width:auto; object-fit:contain; border-radius:8px; }
+.brandlogo{
+  height:100px;            /* adjust for bigger/smaller logo */
+  width:auto;
+  object-fit:contain;
+  border-radius:12px;
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,.35));
+}
 .brandname{
-  margin:0; padding:0; font-size:2.2rem; line-height:1.2;
-  font-weight:800; color:#e5e7eb; letter-spacing:.2px;
+  margin:0;
+  font-size:3.2rem;
+  line-height:1.05;
+  font-weight:800;
+  color:#e5e7eb;
+  letter-spacing:.2px;
 }
+@media (max-width: 640px){
+  .brandlogo{ height:64px; }
+  .brandname{ font-size:2rem; }
+}
+
+/* ===== kill the stray dark strip under the brand ===== */
+.brandwrap + div:not(.login-card){ display:none !important; }
+.brandwrap + div:empty{ display:none !important; }
+main .block-container hr,
+main .block-container [role="separator"]{ display:none !important; }
 
 /* Login card + inputs */
 .login-card{
@@ -103,23 +136,47 @@ label{ color:#cbd5e1 !important; }
 
 APP_LIGHT_CSS = """
 <style>
+/* Header clean */
 [data-testid="stHeader"]{ background:transparent !important; box-shadow:none !important; }
-/* post-login main bg */
+
+/* MAIN (right) background */
 [data-testid="stAppViewContainer"]{
   background: linear-gradient(90deg,#B9F5C8 0%, #C3F0DD 30%, #CDE7F1 65%, #B8D2FF 100%) !important;
   background-attachment: fixed !important;
 }
-/* sidebar gradient + divider */
+
+/* ==== SIDEBAR (left) : blue → white gradient ==== */
 aside[data-testid="stSidebar"]{
-  background: linear-gradient(180deg,#3D6CFF 0%, #7FAAFF 40%, #B8D3FF 75%, #FFFFFF 100%) !important;
+  background: linear-gradient(180deg,
+              #3D6CFF 0%,
+              #7FAAFF 40%,
+              #B8D3FF 75%,
+              #FFFFFF 100%) !important;
+  min-height: 100vh;         /* gradient full height */
+  position: relative;
 }
-.stSidebar .sidebar-content{ background:transparent !important; backdrop-filter: blur(8px) !important; border-radius: 12px !important; }
-aside[data-testid="stSidebar"]{ position:relative; }
+
+/* Make all inner wrappers transparent so gradient shows */
+aside[data-testid="stSidebar"] > div,
+aside[data-testid="stSidebar"] [data-testid="stSidebarContent"],
+aside[data-testid="stSidebar"] [data-testid="stSidebarUserContent"],
+aside[data-testid="stSidebar"] [data-testid="stVerticalBlock"],
+aside[data-testid="stSidebar"] *{
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Optional: subtle divider line on right edge */
 aside[data-testid="stSidebar"]::after{
   content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
-  background: linear-gradient(to bottom,rgba(255,255,255,.70),rgba(255,255,255,.35),rgba(255,255,255,.70));
+  background: linear-gradient(to bottom,
+              rgba(255,255,255,.70),
+              rgba(255,255,255,.35),
+              rgba(255,255,255,.70));
+  pointer-events:none;
 }
-/* table glass */
+
+/* Table glass (same as before) */
 .stDataFrame table{
   background: rgba(255,255,255,.18) !important; backdrop-filter: blur(4px) !important;
   border-radius: 8px !important;
@@ -127,10 +184,13 @@ aside[data-testid="stSidebar"]::after{
 </style>
 """
 
+
+
+
 # ── Login view ────────────────────────────────────────────────────────────────
 def login_view():
     st.markdown(LOGIN_DARK_CSS, unsafe_allow_html=True)
-    brandbar()  # Bonhoeffer Machines + logo
+    brandbar()  # Bonhoeffer Machines + centered big logo
 
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown("<h2>🔐 Team Login</h2><p>Please sign in to continue</p>", unsafe_allow_html=True)
@@ -173,7 +233,7 @@ if not logged_in():
     login_view()
     st.stop()
 
-# ── Post-login styles & top bar ───────────────────────────────────────────────
+# ── Post-login top UI (title + sidebar) ───────────────────────────────────────
 st.markdown(APP_LIGHT_CSS, unsafe_allow_html=True)
 st.title("📊 Sales Dashboard – Primary & Secondary")
 
@@ -184,8 +244,11 @@ with sb:
                 f"**{u.get('designation','')} – {u.get('department','')}**")
     st.button("Logout", on_click=logout, type="secondary")
 
-# ───────────────  Secondary sheets/data sources yahin se niche start karna  ───────────────
-# (yahan se aap apna `secondary_sheets`, `secondary_segments`, `primary_tabs`, etc. define karoge)
+# =========================
+# secondary_sheets WILL START BELOW THIS LINE
+# =========================
+
+
 
 
 # ── Data sources ───────────────────────────────────────────────────────────────
@@ -356,7 +419,6 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
-
 
 
 
