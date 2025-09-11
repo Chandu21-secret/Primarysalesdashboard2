@@ -8,34 +8,43 @@ st.set_page_config(page_title="Sales Dashboard", layout="wide")
 # ── Styles ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* —— Sidebar/Main separator line —— */
-aside[data-testid="stSidebar"]{
-  position: relative;
-}
-aside[data-testid="stSidebar"]::after{
-  content: "";
-  position: absolute;
-  top: 0; bottom: 0; right: 0;
-  width: 2px;
-  /* subtle vertical line */
-  background: linear-gradient(to bottom,
-              rgba(255,255,255,.70),
-              rgba(255,255,255,.35),
-              rgba(255,255,255,.70));
-  pointer-events: none;  /* no click issues */
+/* ===== Reset header whites ===== */
+[data-testid="stHeader"], [data-testid="stToolbar"]{
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
-/* —— Optional: soft shadow on main edge for depth —— */
+/* ===== MAIN (right) — mint → sky blue exactly like screenshot ===== */
 [data-testid="stAppViewContainer"]{
-  box-shadow: inset 10px 0 18px -14px rgba(0,0,0,.35);
+  background: linear-gradient(90deg,
+              #B9F5C8 0%,   /* mint green left */
+              #C3F0DD 30%,
+              #CDE7F1 65%,
+              #B8D2FF 100%  /* light sky blue right */
+            ) !important;
+  background-size: 100% 100% !important;
+  background-attachment: fixed !important;
 }
 
-/* —— Optional: very light glass tint inside sidebar so area feels distinct —— */
+/* ===== SIDEBAR (left) — pale teal → royal blue like screenshot ===== */
+aside[data-testid="stSidebar"]{
+  background: linear-gradient(180deg,
+              #DFF6FF 0%,
+              #B8D3FF 45%,
+              #7FAAFF 75%,
+              #3D6CFF 100%
+            ) !important;
+}
+
+/* Sidebar inner panel transparent so same gradient dikhe */
 .stSidebar .sidebar-content{
-  background: rgba(255,255,255,.06) !important;   /* keep gradient visible */
-  backdrop-filter: blur(8px) !important;
+  background: transparent !important;
+  backdrop-filter: blur(8px) !important;   /* optional glassy feel */
   border-radius: 12px !important;
 }
+
+/* Optional: thoda top padding tight */
+.main .block-container{ padding-top: .8rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -214,6 +223,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
