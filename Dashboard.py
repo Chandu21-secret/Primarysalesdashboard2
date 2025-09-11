@@ -5,7 +5,7 @@ import hashlib, base64, os
 
 # ── App config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
-LOGO_PATH = "assets/bonhoeffer-logo.png"  # << change if needed
+LOGO_PATH = "assets/bonhoeffer-logo.png"  # <- apna path/naam de sakte ho
 
 # ====== Simple Auth (in-memory) ==============================================
 def _hash(p: str) -> str:
@@ -27,31 +27,32 @@ def logout():
         st.session_state.pop(k, None)
     st.rerun()
 
-# ── Brand header (name + logo) ───────────────────────────────────────────────
+# ── Brand header (logo + big title) ──────────────────────────────────────────
 def brandbar(title: str = "Bonhoeffer Machines", logo_path: str = LOGO_PATH):
     logo_b64 = ""
     if os.path.exists(logo_path):
         with open(logo_path, "rb") as f:
             logo_b64 = base64.b64encode(f.read()).decode("utf-8")
-    img_tag = (f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>"
-               if logo_b64 else "")
+    logo_img = (
+        f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>"
+        if logo_b64 else ""
+    )
     st.markdown(f"""
-    <div class="brandbar">
-        {img_tag}
-        <span class="brandname">{title}</span>
+    <div class="brandwrap">
+        {logo_img}
+        <h1 class="brandname">{title}</h1>
     </div>
     """, unsafe_allow_html=True)
 
-# ── Styles (two modes) ───────────────────────────────────────────────────────
+# ── Styles (Login dark + App light) ───────────────────────────────────────────
 LOGIN_DARK_CSS = """
 <style>
-/* remove top blank space / pill */
-[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"]{
-  display:none !important;
-}
+/* remove top gaps/pills/toolbars */
+[data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stDecoration"],
+button[kind="header"], .stDeployButton { display:none !important; }
 main .block-container{ padding-top: 8px !important; }
 
-/* dark background */
+/* Dark bg */
 [data-testid="stAppViewContainer"]{
   background:
     radial-gradient(1000px 500px at -10% -10%, #0b1220 20%, transparent 60%),
@@ -60,17 +61,18 @@ main .block-container{ padding-top: 8px !important; }
   color:#e5e7eb !important;
 }
 
-/* brand bar */
-.brandbar{
-  width: max-content; margin: 10px auto 18px; padding: 10px 16px;
-  display:flex; align-items:center; gap:12px;
-  background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
-  border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+/* Brand */
+.brandwrap{
+  margin: 6px 8px 14px;
+  display:flex; align-items:center; gap:14px;
 }
-.brandlogo{ width:42px; height:42px; border-radius:10px; object-fit:contain; }
-.brandname{ font-weight:700; font-size:1.5rem; letter-spacing:.3px; color:#e5e7eb; }
+.brandlogo{ height:44px; width:auto; object-fit:contain; border-radius:8px; }
+.brandname{
+  margin:0; padding:0; font-size:2.2rem; line-height:1.2;
+  font-weight:800; color:#e5e7eb; letter-spacing:.2px;
+}
 
-/* login card */
+/* Login card + inputs */
 .login-card{
   max-width: 880px; margin: 8px auto 24px; padding: 22px 22px;
   background: rgba(3,7,18,.75); backdrop-filter: blur(8px);
@@ -80,9 +82,7 @@ main .block-container{ padding-top: 8px !important; }
 .login-card h2{ color:#e5e7eb; margin:0 0 4px; }
 .login-card p{ color:#94a3b8; margin:0 0 16px; }
 
-/* inputs dark */
-.stTextInput>div>div>input,
-.stPassword>div>div>input{
+.stTextInput>div>div>input, .stPassword>div>div>input{
   background:#0f172a !important; color:#e5e7eb !important;
   border:1px solid #243144 !important; border-radius:10px !important;
 }
@@ -92,7 +92,6 @@ main .block-container{ padding-top: 8px !important; }
 }
 label{ color:#cbd5e1 !important; }
 
-/* buttons */
 .stButton>button{
   background: linear-gradient(90deg,#2563eb,#06b6d4) !important;
   color:#fff !important; border:none !important; border-radius:10px !important;
@@ -104,16 +103,13 @@ label{ color:#cbd5e1 !important; }
 
 APP_LIGHT_CSS = """
 <style>
-/* tidy header look */
 [data-testid="stHeader"]{ background:transparent !important; box-shadow:none !important; }
-
-/* light gradient for main app (post-login) */
+/* post-login main bg */
 [data-testid="stAppViewContainer"]{
   background: linear-gradient(90deg,#B9F5C8 0%, #C3F0DD 30%, #CDE7F1 65%, #B8D2FF 100%) !important;
   background-attachment: fixed !important;
 }
-
-/* sidebar gradient */
+/* sidebar gradient + divider */
 aside[data-testid="stSidebar"]{
   background: linear-gradient(180deg,#3D6CFF 0%, #7FAAFF 40%, #B8D3FF 75%, #FFFFFF 100%) !important;
 }
@@ -123,7 +119,6 @@ aside[data-testid="stSidebar"]::after{
   content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
   background: linear-gradient(to bottom,rgba(255,255,255,.70),rgba(255,255,255,.35),rgba(255,255,255,.70));
 }
-
 /* table glass */
 .stDataFrame table{
   background: rgba(255,255,255,.18) !important; backdrop-filter: blur(4px) !important;
@@ -135,7 +130,7 @@ aside[data-testid="stSidebar"]::after{
 # ── Login view ────────────────────────────────────────────────────────────────
 def login_view():
     st.markdown(LOGIN_DARK_CSS, unsafe_allow_html=True)
-    brandbar()
+    brandbar()  # Bonhoeffer Machines + logo
 
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown("<h2>🔐 Team Login</h2><p>Please sign in to continue</p>", unsafe_allow_html=True)
@@ -171,7 +166,6 @@ def login_view():
                 st.rerun()
             else:
                 st.error("Invalid credentials. Please try again.")
-
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ── Gate: show login first ────────────────────────────────────────────────────
@@ -179,17 +173,20 @@ if not logged_in():
     login_view()
     st.stop()
 
-# ── Post-login styles & UI ────────────────────────────────────────────────────
+# ── Post-login styles & top bar ───────────────────────────────────────────────
 st.markdown(APP_LIGHT_CSS, unsafe_allow_html=True)
-
-# Title + sidebar user badge + logout
 st.title("📊 Sales Dashboard – Primary & Secondary")
+
 sb = st.sidebar
 u = st.session_state.get("user", {})
 with sb:
     st.markdown(f"**👋 Logged in as:** {u.get('username','')}  \n"
                 f"**{u.get('designation','')} – {u.get('department','')}**")
     st.button("Logout", on_click=logout, type="secondary")
+
+# ───────────────  Secondary sheets/data sources yahin se niche start karna  ───────────────
+# (yahan se aap apna `secondary_sheets`, `secondary_segments`, `primary_tabs`, etc. define karoge)
+
 
 # ── Data sources ───────────────────────────────────────────────────────────────
 secondary_sheets = {
@@ -359,3 +356,4 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
