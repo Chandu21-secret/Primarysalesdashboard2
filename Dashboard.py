@@ -1,17 +1,14 @@
 import streamlit as st
 import pandas as pd
 import requests
-import hashlib, base64
+import hashlib, base64, os
 from pathlib import Path
 
 # ── App config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
 
-# ── Paths (robust for GitHub/Linux) ───────────────────────────────────────────
-APP_DIR   = Path(__file__).resolve().parent
-ASSETS    = APP_DIR / "assets"
-STATICDIR = APP_DIR / ".streamlit" / "static"
-PREFERRED_LOGO = ASSETS / "bonhoeffer-logo.png"   # keep this file in repo (case-sensitive)
+# Project-relative logo path (change if needed)
+LOGO_PATH = r"C:\\Users\\Lenovo\\OneDrive - BONHOEFFER MACHINES PRIVATE LIMITED\\Dasboard.P.S\\logo-B 2.png"
 
 # ====== Simple Auth (in-memory) ==============================================
 def _hash(p: str) -> str:
@@ -33,40 +30,25 @@ def logout():
         st.session_state.pop(k, None)
     st.rerun()
 
-# ── Logo loader (search common locations; works on GitHub deploys) ────────────
-def _load_logo_bytes():
-    candidates = [
-        PREFERRED_LOGO,
-        ASSETS / "logo.png",
-        ASSETS / "bonhoeffer_logo.png",
-        ASSETS / "logo-b-2.png",
-        STATICDIR / "bonhoeffer-logo.png",
-    ]
-    for p in candidates:
-        if p.exists():
-            try:
-                return p.read_bytes()
-            except Exception:
-                pass
-    # fallback: scan repo for *logo*.{png,jpg,jpeg,webp,svg}
-    exts = {".png", ".jpg", ".jpeg", ".webp", ".svg"}
-    for p in APP_DIR.rglob("*"):
-        if "logo" in p.name.lower() and p.suffix.lower() in exts:
-            try:
-                return p.read_bytes()
-            except Exception:
-                pass
-    return None
-
 # ── Brand header (CENTERED: logo + big title) ────────────────────────────────
-def brandbar(title: str = "Bonhoeffer Machines"):
-    b = _load_logo_bytes()
-    b64 = base64.b64encode(b).decode("utf-8") if b else ""
-    img = f"<img class='brandlogo' src='data:image/png;base64,{b64}' alt='logo'/>" if b64 else ""
-    html = f"<div class='brandwrap'>{img}<h1 class='brandname'>{title}</h1></div>"
-    st.markdown(html, unsafe_allow_html=True)  # IMPORTANT: no st.write()/st.code()
+def brandbar(title: str = "Bonhoeffer Machines", logo_path: Path = LOGO_PATH):
+    logo_b64 = ""
+    p = Path(logo_path)
+    if p.exists():
+        with open(p, "rb") as f:
+            logo_b64 = base64.b64encode(f.read()).decode("utf-8")
+    logo_img = (
+        f"<img class='brandlogo' src='data:image/png;base64,{logo_b64}' alt='logo'/>"
+        if logo_b64 else ""
+    )
+    st.markdown(f"""
+    <div class="brandwrap">
+        {logo_img}
+        <h1 class="brandname">{title}</h1>
+    </div>
+    """, unsafe_allow_html=True)
 
-# ── Styles (Login dark) ───────────────────────────────────────────────────────
+# ── Styles (Login dark + App light) ───────────────────────────────────────────
 LOGIN_DARK_CSS = """
 <style>
 /* remove header/toolbar/decoration space */
@@ -97,25 +79,24 @@ main .block-container{ padding-top:8px !important; }
   text-align:center;
 }
 .brandlogo{
-  height:100px;              /* change if you want bigger/smaller */
-  width:auto; object-fit:contain;
+  height:100px;            /* adjust for bigger/smaller logo */
+  width:auto;
+  object-fit:contain;
   border-radius:12px;
   filter: drop-shadow(0 6px 18px rgba(0,0,0,.35));
 }
 .brandname{
-  margin:0; font-size:3.2rem; line-height:1.05; font-weight:800;
-  color:#e5e7eb; letter-spacing:.2px;
+  margin:0;
+  font-size:3.2rem;
+  line-height:1.05;
+  font-weight:800;
+  color:#e5e7eb;
+  letter-spacing:.2px;
 }
 @media (max-width: 640px){
   .brandlogo{ height:64px; }
   .brandname{ font-size:2rem; }
 }
-
-/* remove any stray strip under brand */
-.brandwrap + div:not(.login-card){ display:none !important; }
-.brandwrap + div:empty{ display:none !important; }
-main .block-container hr,
-main .block-container [role="separator"]{ display:none !important; }
 
 /* Login card + inputs */
 .login-card{
@@ -126,32 +107,45 @@ main .block-container [role="separator"]{ display:none !important; }
 }
 .login-card h2{ color:#e5e7eb; margin:0 0 4px; }
 .login-card p{ color:#94a3b8; margin:0 0 16px; }
+
 .stTextInput>div>div>input, .stPassword>div>div>input{
   background:#0f172a !important; color:#e5e7eb !important;
-  border:1.5px solid #243144 !important; border-radius:10px !important;
+  border:1px solid #243144 !important; border-radius:10px !important;
 }
 .stSelectbox div[data-baseweb="select"]>div{
   background:#0f172a !important; color:#e5e7eb !important;
-  border:1.5px solid #243144 !important; border-radius:10px !important;
+  border:1px solid #243144 !important; border-radius:10px !important;
 }
 label{ color:#cbd5e1 !important; }
+
 .stButton>button{
   background: linear-gradient(90deg,#2563eb,#06b6d4) !important;
   color:#fff !important; border:none !important; border-radius:10px !important;
-  padding:.55em 1.2em !important; box-shadow: 0 8px 24px rgba(2,132,199,.35);
+  padding:.55em 1.2em !important; box-shadow:0 8px 24px rgba(2,132,199,.35);
 }
 .stButton>button:hover{ filter:brightness(1.05); }
 </style>
 """
 
-# ── Styles (Post-login app base) ──────────────────────────────────────────────
 APP_LIGHT_CSS = """
 <style>
 [data-testid="stHeader"]{ background:transparent !important; box-shadow:none !important; }
-/* MAIN (right) background */
+/* post-login main bg */
 [data-testid="stAppViewContainer"]{
   background: linear-gradient(90deg,#B9F5C8 0%, #C3F0DD 30%, #CDE7F1 65%, #B8D2FF 100%) !important;
   background-attachment: fixed !important;
+}
+/* sidebar gradient + divider */
+aside[data-testid="stSidebar"]{
+  background: linear-gradient(180deg,#3D6CFF 0%, #7FAAFF 40%, #B8D3FF 75%, #FFFFFF 100%) !important;
+}
+.stSidebar .sidebar-content{
+  background:transparent !important; backdrop-filter: blur(8px) !important; border-radius: 12px !important;
+}
+aside[data-testid="stSidebar"]{ position:relative; }
+aside[data-testid="stSidebar"]::after{
+  content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
+  background: linear-gradient(to bottom,rgba(255,255,255,.70),rgba(255,255,255,.35),rgba(255,255,255,.70));
 }
 /* table glass */
 .stDataFrame table{
@@ -161,178 +155,44 @@ APP_LIGHT_CSS = """
 </style>
 """
 
-# ── Force sidebar gradient + select hover/active + radio red ─────────────────
-SIDEBAR_FORCE_CSS = """
+# --- Post-login sidebar: light pastel gradient ---
+POSTLOGIN_SIDEBAR_COLOR = """
 <style>
-:root{ --sb-grad: linear-gradient(180deg,#3D6CFF 0%,#7FAAFF 40%,#B8D3FF 75%,#FFFFFF 100%); }
-aside[data-testid="stSidebar"], section[data-testid="stSidebar"]{
-  background: transparent !important; position: relative; min-height: 100vh; overflow: visible !important;
+/* keep layout same; just paint a lighter gradient */
+aside[data-testid="stSidebar"]{
+  position: relative; background: none !important;
 }
-aside[data-testid="stSidebar"]::before, section[data-testid="stSidebar"]::before{
-  content:""; position:absolute; inset:0; background: var(--sb-grad) !important; z-index: 0;
+aside[data-testid="stSidebar"]::before{
+  content: "";
+  position: absolute; inset: 0;
+  /* 🌤️ very light mint → aqua → sky → white */
+  background: linear-gradient(180deg,
+              #F6FCFF 0%,
+              #EAF7FF 45%,
+              #EEF2FF 80%,
+              #FFFFFF 100%);
+  z-index: 0; pointer-events: none;
 }
-aside[data-testid="stSidebar"] *, section[data-testid="stSidebar"] *{
-  background: transparent !important; background-color: transparent !important;
-}
-aside[data-testid="stSidebar"]::after, section[data-testid="stSidebar"]::after{
-  content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
-  background: linear-gradient(to bottom,rgba(255,255,255,.70),rgba(255,255,255,.35),rgba(255,255,255,.70));
-  z-index: 1; pointer-events:none;
+/* ensure children sit above the paint layer */
+aside[data-testid="stSidebar"] *{
+  position: relative; z-index: 1; background: transparent !important;
 }
 </style>
 """
 
-SIDEBAR_HOVER_FIX_CSS = """
-<style>
-/* Sidebar selectbox: visible hover + focus ring (base) */
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div{
-  background: rgba(255,255,255,.14) !important;
-  border: 1.5px solid rgba(255,255,255,.35) !important;
-  border-radius: 10px !important;
-  transition: box-shadow .15s ease, background .15s ease, border-color .15s ease;
-}
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div:hover{
-  background: rgba(255,255,255,.20) !important;
-  box-shadow: 0 0 0 3px rgba(59,130,246,.35) !important;
-}
-/* Dropdown options overlay */
-div[role="listbox"] [role="option"]{
-  border-radius: 8px !important;
-  margin: 2px 6px !important;
-  padding: 8px 10px !important;
-}
-div[role="listbox"] [role="option"]:hover{
-  background: rgba(59,130,246,.18) !important;
-}
-div[role="listbox"] [role="option"][aria-selected="true"]{
-  background: rgba(59,130,246,.28) !important;
-  outline: 2px solid rgba(59,130,246,.55) !important;
-  outline-offset: 0 !important;
-  position: relative;
-}
-div[role="listbox"] [role="option"][aria-selected="true"]::after{
-  content: "✓";
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  font-weight: 700;
-}
-</style>
-"""
 
-RADIO_RED_CSS = """
-<style>
-/* Sidebar radios: red indicator & hover */
-aside[data-testid="stSidebar"] input[type="radio"]{
-  accent-color:#ef4444 !important; /* native radios fallback */
-}
-/* BaseWeb radios used by Streamlit */
-aside[data-testid="stSidebar"] [data-baseweb="radio"] label > div:first-child{
-  border-color: rgba(239,68,68,.85) !important;
-  transition: box-shadow .15s, border-color .15s, background .15s;
-}
-aside[data-testid="stSidebar"] [data-baseweb="radio"] label:hover > div:first-child{
-  box-shadow: 0 0 0 3px rgba(239,68,68,.35) !important;
-}
-aside[data-testid="stSidebar"] [data-baseweb="radio"] label[aria-checked="true"] > div:first-child{
-  background:#ef4444 !important;
-  border-color:#ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239,68,68,.30) !important;
-}
-aside[data-testid="stSidebar"] [data-baseweb="radio"] label[aria-checked="true"] svg{
-  color:#fff !important; fill:#fff !important;
-}
-</style>
-"""
 
-# Active dropdown highlight: red label + arrow rotate + red ring when open/focused
-SIDEBAR_SELECT_ACTIVE_CSS = """
-<style>
-/* base already set by hover fix; add clear active/open cues */
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div[aria-expanded="true"],
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div:focus-within{
-  border-color:#ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239,68,68,.40) !important;
-  background: rgba(255,255,255,.24) !important;
-}
-/* label turns red for active dropdown */
-aside[data-testid="stSidebar"] .stSelectbox:hover > label,
-aside[data-testid="stSidebar"] .stSelectbox:focus-within > label{
-  color:#ef4444 !important; font-weight:700 !important;
-}
-/* arrow anim + active color */
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] svg{
-  transition: transform .2s ease, color .2s ease;
-}
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div[aria-expanded="true"] svg{
-  transform: rotate(180deg);
-  color:#ef4444 !important;
-}
-/* options: selected = red bg + tick */
-div[role="listbox"] [role="option"][aria-selected="true"]{
-  background: rgba(239,68,68,.22) !important;
-  outline: 2px solid rgba(239,68,68,.55) !important;
-}
-div[role="listbox"] [role="option"][aria-selected="true"]::after{
-  content:"✓"; position:absolute; right:10px; top:50%; transform:translateY(-50%); font-weight:700;
-}
-</style>
-"""
-
-# Stronger ring + z-index fixes so red ring definitely appears
-SIDEBAR_SELECT_RING_FIX_CSS = """
-<style>
-/* Make sure ring is not clipped anywhere */
-aside[data-testid="stSidebar"], section[data-testid="stSidebar"],
-aside [data-testid="stSidebarContent"], aside [data-testid="stVerticalBlock"]{
-  overflow: visible !important;
-}
-/* Base look with higher z so ring shows above gradient */
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div{
-  position: relative;
-  z-index: 2;
-  background: rgba(255,255,255,.14) !important;
-  border: 1.5px solid rgba(255,255,255,.35) !important;
-  border-radius: 10px !important;
-}
-/* Hover = red ring */
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div:hover{
-  border-color:#ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239,68,68,.40) !important;
-  background: rgba(255,255,255,.20) !important;
-}
-/* Focus/Open = stronger red ring */
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div:focus-within,
-aside[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"]>div[aria-expanded="true"]{
-  border-color:#ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239,68,68,.48) !important;
-  background: rgba(255,255,255,.24) !important;
-}
-/* Options menu on top */
-div[role="listbox"]{ z-index: 9999 !important; }
-</style>
-"""
 
 def inject_post_login_styles():
-    st.markdown(APP_LIGHT_CSS, unsafe_allow_html=True)
+    st.sidebar.markdown(POSTLOGIN_SIDEBAR_COLOR, unsafe_allow_html=True)
 
-    st.markdown(SIDEBAR_FORCE_CSS, unsafe_allow_html=True)
-    st.sidebar.markdown(SIDEBAR_FORCE_CSS, unsafe_allow_html=True)
 
-    st.markdown(SIDEBAR_HOVER_FIX_CSS, unsafe_allow_html=True)
-    st.sidebar.markdown(SIDEBAR_HOVER_FIX_CSS, unsafe_allow_html=True)
 
-    st.markdown(RADIO_RED_CSS, unsafe_allow_html=True)
-    st.sidebar.markdown(RADIO_RED_CSS, unsafe_allow_html=True)
-
-    st.markdown(SIDEBAR_SELECT_ACTIVE_CSS, unsafe_allow_html=True)
-    st.sidebar.markdown(SIDEBAR_SELECT_ACTIVE_CSS, unsafe_allow_html=True)
-
-    st.markdown(SIDEBAR_SELECT_RING_FIX_CSS, unsafe_allow_html=True)
-    st.sidebar.markdown(SIDEBAR_SELECT_RING_FIX_CSS, unsafe_allow_html=True)
 
 # ── Login view ────────────────────────────────────────────────────────────────
 def login_view():
     st.markdown(LOGIN_DARK_CSS, unsafe_allow_html=True)
-    brandbar()  # Centered logo + title
+    brandbar()  # Bonhoeffer Machines + centered big logo
 
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown("<h2>🔐 Team Login</h2><p>Please sign in to continue</p>", unsafe_allow_html=True)
@@ -376,7 +236,7 @@ if not logged_in():
     st.stop()
 
 # ── Post-login top UI (title + sidebar) ───────────────────────────────────────
-inject_post_login_styles()
+st.markdown(APP_LIGHT_CSS, unsafe_allow_html=True)
 st.title("📊 Sales Dashboard – Primary & Secondary")
 
 sb = st.sidebar
@@ -389,6 +249,8 @@ with sb:
 # =========================
 # secondary_sheets WILL START BELOW THIS LINE
 # =========================
+
+
 
 
 
@@ -563,7 +425,6 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
-
 
 
 
