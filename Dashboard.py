@@ -170,31 +170,11 @@ APP_LIGHT_CSS = """
 </style>
 """
 
-# Force sidebar gradient across builds
-SIDEBAR_FORCE_CSS = """
-<style>
-:root{ --sb-grad: linear-gradient(180deg,#3D6CFF 0%,#7FAAFF 40%,#B8D3FF 75%,#FFFFFF 100%); }
-aside[data-testid="stSidebar"], section[data-testid="stSidebar"]{
-  background: transparent !important; position: relative; min-height: 100vh; overflow: visible !important;
-}
-aside[data-testid="stSidebar"]::before, section[data-testid="stSidebar"]::before{
-  content:""; position:absolute; inset:0; background: var(--sb-grad) !important; z-index: 0;
-}
-aside[data-testid="stSidebar"] *, section[data-testid="stSidebar"] *{
-  background: transparent !important; background-color: transparent !important;
-}
-aside[data-testid="stSidebar"]::after, section[data-testid="stSidebar"]::after{
-  content:""; position:absolute; top:0; bottom:0; right:0; width:2px;
-  background: linear-gradient(to bottom,rgba(255,255,255,.70),rgba(255,255,255,.35),rgba(255,255,255,.70));
-  z-index: 1; pointer-events:none;
-}
-</style>
-"""
+
 
 def inject_post_login_styles():
     st.markdown(APP_LIGHT_CSS, unsafe_allow_html=True)
-    st.markdown(SIDEBAR_FORCE_CSS, unsafe_allow_html=True)
-    st.sidebar.markdown(SIDEBAR_FORCE_CSS, unsafe_allow_html=True)
+  
 
 # ── Login view ────────────────────────────────────────────────────────────────
 def login_view():
@@ -433,7 +413,6 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
-
 
 
 
