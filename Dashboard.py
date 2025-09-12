@@ -20,7 +20,7 @@ def _hash(p: str) -> str:
     return hashlib.sha256(p.encode("utf-8")).hexdigest()
 
 USERS = {
-    "aniket": _hash("admin@123"),
+    "chandan": _hash("admin@123"),
     "rohit":  _hash("rohit@123"),
     "rahul":  _hash("rahul@123"),
     "ashwin": _hash("ashwin@123"),
@@ -433,6 +433,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
