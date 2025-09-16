@@ -293,9 +293,9 @@ secondary_sheets = {
         "https://docs.google.com/spreadsheets/d/1bR0yZ0XH6Igdq9rJQEn91VIyqlnxc2ljwrmUjsKo92Q/export?format=csv"],
 
     "Dominican Republic":[
-        "https://docs.google.com/spreadsheets/d/15m77a-ZSOQUUVdT63JDxSK9tHyAykz2fFs00KUz_iKk/edit?usp=sharing"]
-    
+        "https://docs.google.com/spreadsheets/d/15m77a-ZSOQUUVdT63JDxSK9tHyAykz2fFs00KUz_iKk/export?format=csv"]
 
+    
 
 }
 
@@ -445,6 +445,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
