@@ -286,9 +286,15 @@ secondary_sheets = {
         "https://docs.google.com/spreadsheets/d/1jQzeI8jXoWwsutUJDvBZBK9VDPwVXUVu7XWDxSE3zvM/export?format=csv"],
     
     "Uruguay":[
-        "https://docs.google.com/spreadsheets/d/1S3tCmjy5rXj4KrDuaejDEPK-Kquf5dz3IUq2Bs67DY0/export?format=csv"]
+        "https://docs.google.com/spreadsheets/d/1S3tCmjy5rXj4KrDuaejDEPK-Kquf5dz3IUq2Bs67DY0/export?format=csv"],
+    
+    "Chile":[
+        "https://docs.google.com/spreadsheets/d/1f40vygYZdk3euJwAbxD14sG8WZJjCdlwkm78jzAev88/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1bR0yZ0XH6Igdq9rJQEn91VIyqlnxc2ljwrmUjsKo92Q/export?format=csv"],
 
-
+    "Dominican Republic":[
+        "https://docs.google.com/spreadsheets/d/15m77a-ZSOQUUVdT63JDxSK9tHyAykz2fFs00KUz_iKk/edit?usp=sharing"]
+    
 
 
 }
@@ -306,7 +312,9 @@ secondary_segments = {
     "Colombia":["GSP","Gardening"],
     "Brazil":["Powertools"],
     "Ecuador":["GSP","Gardening"],
-    "Uruguay":["Powertools"]
+    "Uruguay":["Powertools"],
+    "Chile":["GSP", "Gardening"],
+    "Dominican Republic":["Powertools"]
 }
 
 sheet_id = "1u06bqzGn8HtsvOOde30bvVdsXJfvvmfHiy1m1pDhtPA"
@@ -437,6 +445,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
