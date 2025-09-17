@@ -280,7 +280,7 @@ secondary_sheets = {
     
     "Brazil":[
         "https://docs.google.com/spreadsheets/d/1CjsC3Fvf6ag26QKdGmoSwgX330scuDgI9HD2xF7fDc8/export?format=csv",
-        "https://docs.google.com/spreadsheets/d/1At3MMnUsYiaLbVI2_VMrFt7iepEAtHxa74nghk1jbS8/export?format=csv"]
+        "https://docs.google.com/spreadsheets/d/1At3MMnUsYiaLbVI2_VMrFt7iepEAtHxa74nghk1jbS8/export?format=csv"],
 
     
     "Ecuador":[
@@ -447,6 +447,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
