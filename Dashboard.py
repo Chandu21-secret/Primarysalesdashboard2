@@ -248,7 +248,7 @@ with sb:
 # ── Data sources ───────────────────────────────────────────────────────────────
 secondary_sheets = {
     "Mexico": [
-        "https://docs.google.com/spreadsheets/d/1QR37MDuFuX8tRAjBYFxwwtrW_cOZ8CVH45c-Nuy8PB8/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1E4Fb8O3ra8P8JpR8bWXGuJ3VkqjG0EZGGX1TeIGgtRA/export?format=csv",
         "https://docs.google.com/spreadsheets/d/1mSm6cLpBBvuD7CDYCu_Bm4rpmV4rRqjVbLLUk47soGc/export?format=csv",
         "https://docs.google.com/spreadsheets/d/198NNm5fBEegZ75EJVtkj5GIGH_TvvEI4O_UyjjGlvak/export?format=csv"
     ],
@@ -276,7 +276,9 @@ secondary_sheets = {
      ],
     "Colombia":[
         "https://docs.google.com/spreadsheets/d/1e9-E9m4W6Tim929au6Lr_40eobM73fm8G1xVF-mSG2U/export?format=csv",
-        "https://docs.google.com/spreadsheets/d/1Mjcamt0QJZvSLfBdyh-q4u_P08oI7ttCQBYtR6t1sv0/export?format=csv"],
+        "https://docs.google.com/spreadsheets/d/1Mjcamt0QJZvSLfBdyh-q4u_P08oI7ttCQBYtR6t1sv0/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1KUhznIurYMT-xH8yKOTQ6mbVX3HQhL9m0OZc917x64M/export?format=csv"],
+
     
     "Brazil":[
         "https://docs.google.com/spreadsheets/d/1CjsC3Fvf6ag26QKdGmoSwgX330scuDgI9HD2xF7fDc8/export?format=csv",
@@ -319,7 +321,7 @@ secondary_segments = {
     "Nicaragua":["Gardening"],
     "Jamaica":["Gardening","GSP"],
     "Uruguay":["Powertools"],
-    "Colombia":["GSP","Gardening"],
+    "Colombia":["GSP","Gardening","Powertools"],
     "Brazil":["Powertools","Gardening"],
     "Ecuador":["GSP","Gardening","Powertools"],
     "Uruguay":["Powertools"],
@@ -456,6 +458,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
