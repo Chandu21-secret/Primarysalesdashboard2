@@ -291,23 +291,24 @@ secondary_sheets = {
         "https://docs.google.com/spreadsheets/d/1lbcj3MLClwPm_bh4EPAUJRz2Qu6alKDTvWDS3BmxbYg/export?format=csv"],
 
     
-    "Uruguay":[
-        "https://docs.google.com/spreadsheets/d/1S3tCmjy5rXj4KrDuaejDEPK-Kquf5dz3IUq2Bs67DY0/export?format=csv"],
+    "Paraguay":[
+        "https://docs.google.com/spreadsheets/d/1HK0wTh82snG6DkaCWHUCcSxp5CiN9Up85QcBMVJm1JQ/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1_x4hu3_8Zg1yapTb46TU8251-e_Fn-AmVXzLfR4Y9qk/export?format=csv"],
+
+
     
     "Chile":[
         "https://docs.google.com/spreadsheets/d/1f40vygYZdk3euJwAbxD14sG8WZJjCdlwkm78jzAev88/export?format=csv",
-        "https://docs.google.com/spreadsheets/d/1bR0yZ0XH6Igdq9rJQEn91VIyqlnxc2ljwrmUjsKo92Q/export?format=csv"],
+        "https://docs.google.com/spreadsheets/d/1bR0yZ0XH6Igdq9rJQEn91VIyqlnxc2ljwrmUjsKo92Q/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1acLCXYNoXD-EP5mXPqmTtK8ZG2kXng1t-_JMFlkygek/export?format=csv"],
+
 
     "Dominican Republic":[
         "https://docs.google.com/spreadsheets/d/15m77a-ZSOQUUVdT63JDxSK9tHyAykz2fFs00KUz_iKk/export?format=csv"],
 
     "Argentina":[
          "https://docs.google.com/spreadsheets/d/1X43vCvu63kOJHPxMtl5jL_29GTbC0llOPPKt_NFI3UI/export?format=csv",
-         "https://docs.google.com/spreadsheets/d/1WP2O0WZ_7NzjXQo_AaczoL2tanMQeEXIPBozNv65k7g/export?format=csv"]
-
-
-
-    
+         "https://docs.google.com/spreadsheets/d/1WP2O0WZ_7NzjXQo_AaczoL2tanMQeEXIPBozNv65k7g/export?format=csv"]   
 
 }
 
@@ -324,8 +325,8 @@ secondary_segments = {
     "Colombia":["GSP","Gardening","Powertools"],
     "Brazil":["Powertools","Gardening"],
     "Ecuador":["GSP","Gardening","Powertools"],
-    "Uruguay":["Powertools"],
-    "Chile":["GSP", "Gardening"],
+    "Paraguay":["GSP","Powertools"],
+    "Chile":["GSP", "Gardening","Powertools"],
     "Dominican Republic":["Powertools"],
     "Argentina":["Gardening","GSP"]
 }
@@ -458,6 +459,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
