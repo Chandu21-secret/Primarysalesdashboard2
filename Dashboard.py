@@ -323,6 +323,7 @@ secondary_sheets = {
          "https://docs.google.com/spreadsheets/d/1X43vCvu63kOJHPxMtl5jL_29GTbC0llOPPKt_NFI3UI/export?format=csv",
          "https://docs.google.com/spreadsheets/d/1WP2O0WZ_7NzjXQo_AaczoL2tanMQeEXIPBozNv65k7g/export?format=csv",
          "https://docs.google.com/spreadsheets/d/1AHUaa0hwOE0uKv0j6BQy7XydFv3IXOk3lIlOm1wu-AM/export?format=csv"
+    ],
 
 
 }
@@ -474,6 +475,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
