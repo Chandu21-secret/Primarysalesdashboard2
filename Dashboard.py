@@ -254,7 +254,9 @@ secondary_sheets = {
     ],
     "Peru": [
         "https://docs.google.com/spreadsheets/d/1Jvhi1oKED8SAviitGfRx09J3bBj9lKOBpRB9zZWcZb8/export?format=csv",
-        "https://docs.google.com/spreadsheets/d/1BqWyqXH6WWhwlCHe6R2tHTMhH5JVarvlAU54siKhw2s/export?format=csv"
+        "https://docs.google.com/spreadsheets/d/1BqWyqXH6WWhwlCHe6R2tHTMhH5JVarvlAU54siKhw2s/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1DgO9ActV8F5lZDT8j_Wk6XfM7CN-mZpvKm2BpOf_tIg/export?format=csv"
+
     ],
     "Honduras": [
         "https://docs.google.com/spreadsheets/d/15WN-ThUiTMoQ_zusyXPMKzSq5voKw7nfVu-gZJs2wgg/export?format=csv",
@@ -271,9 +273,14 @@ secondary_sheets = {
         "https://docs.google.com/spreadsheets/d/1Mxu810CoTJaQdJHUFPPzUnRd9ncGDK2V8wNAwpmf3bg/export?format=csv",
         "https://docs.google.com/spreadsheets/d/1wPyc1LZVaVNgIrUJy5oRqj-JvpyIYqyhJ5pvgNnJano/export?format=csv"
      ],
+    
      "Uruguay":[
-        "https://docs.google.com/spreadsheets/d/1S3tCmjy5rXj4KrDuaejDEPK-Kquf5dz3IUq2Bs67DY0/export?format=csv"
+        "https://docs.google.com/spreadsheets/d/1S3tCmjy5rXj4KrDuaejDEPK-Kquf5dz3IUq2Bs67DY0/export?format=csv",
+         "https://docs.google.com/spreadsheets/d/1s_Lg9UGqhq3mikmyf04Cw8v0Yx7l5kkicytqWf1d24I/export?format=csv",
+         "https://docs.google.com/spreadsheets/d/1YFtqCo-J21h6AcCNpekb0h8bLpBkHYiNzLbVfgFFBtA/export?format=csv"
      ],
+
+    
     "Colombia":[
         "https://docs.google.com/spreadsheets/d/1e9-E9m4W6Tim929au6Lr_40eobM73fm8G1xVF-mSG2U/export?format=csv",
         "https://docs.google.com/spreadsheets/d/1Mjcamt0QJZvSLfBdyh-q4u_P08oI7ttCQBYtR6t1sv0/export?format=csv",
@@ -293,7 +300,10 @@ secondary_sheets = {
     
     "Paraguay":[
         "https://docs.google.com/spreadsheets/d/1HK0wTh82snG6DkaCWHUCcSxp5CiN9Up85QcBMVJm1JQ/export?format=csv",
-        "https://docs.google.com/spreadsheets/d/1_x4hu3_8Zg1yapTb46TU8251-e_Fn-AmVXzLfR4Y9qk/export?format=csv"],
+        "https://docs.google.com/spreadsheets/d/1_x4hu3_8Zg1yapTb46TU8251-e_Fn-AmVXzLfR4Y9qk/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1U0zun3MBM0h64nGlLbalKFU2lkr2ZWfy4GPoWY-58tI/export?format=csv"
+    ],
+
 
 
     
@@ -304,11 +314,16 @@ secondary_sheets = {
 
 
     "Dominican Republic":[
-        "https://docs.google.com/spreadsheets/d/15m77a-ZSOQUUVdT63JDxSK9tHyAykz2fFs00KUz_iKk/export?format=csv"],
+        "https://docs.google.com/spreadsheets/d/15m77a-ZSOQUUVdT63JDxSK9tHyAykz2fFs00KUz_iKk/export?format=csv",
+        "https://docs.google.com/spreadsheets/d/1RvqNW1yE9leWb-DZYzdHVe219V_h-hOnZDOgDloOLVs/export?format=csv"
+    ],
+
 
     "Argentina":[
          "https://docs.google.com/spreadsheets/d/1X43vCvu63kOJHPxMtl5jL_29GTbC0llOPPKt_NFI3UI/export?format=csv",
-         "https://docs.google.com/spreadsheets/d/1WP2O0WZ_7NzjXQo_AaczoL2tanMQeEXIPBozNv65k7g/export?format=csv"]   
+         "https://docs.google.com/spreadsheets/d/1WP2O0WZ_7NzjXQo_AaczoL2tanMQeEXIPBozNv65k7g/export?format=csv",
+         "https://docs.google.com/spreadsheets/d/1AHUaa0hwOE0uKv0j6BQy7XydFv3IXOk3lIlOm1wu-AM/export?format=csv"
+
 
 }
 
@@ -316,19 +331,19 @@ secondary_sheets = {
 
 secondary_segments = {
     "Mexico":   ["Gardening","Powertools","GSP"],
-    "Peru":     ["Powertools","Gardening"],
+    "Peru":     ["Powertools","Gardening","Powertools"],
     "Honduras": ["Powertools","Gardening"],
     "Panama":   ["Powertools","Gardening"],
     "Nicaragua":["Gardening"],
     "Jamaica":["Gardening","GSP"],
-    "Uruguay":["Powertools"],
+    "Uruguay":["Powertools","Gardening","GSP"],
     "Colombia":["GSP","Gardening","Powertools"],
     "Brazil":["Powertools","Gardening"],
     "Ecuador":["GSP","Gardening","Powertools"],
-    "Paraguay":["GSP","Powertools"],
+    "Paraguay":["GSP","Powertools","Gardening"],
     "Chile":["GSP", "Gardening","Powertools"],
-    "Dominican Republic":["Powertools"],
-    "Argentina":["Gardening","GSP"]
+    "Dominican Republic":["Powertools","GSP"],
+    "Argentina":["Gardening","GSP","Powertools"]
 }
 
 sheet_id = "1u06bqzGn8HtsvOOde30bvVdsXJfvvmfHiy1m1pDhtPA"
@@ -459,6 +474,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
