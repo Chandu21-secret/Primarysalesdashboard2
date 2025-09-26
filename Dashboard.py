@@ -332,7 +332,7 @@ secondary_sheets = {
 
 secondary_segments = {
     "Mexico":   ["Gardening","Powertools","GSP"],
-    "Peru":     ["Powertools","Gardening","Powertools"],
+    "Peru":     ["Powertools","Gardening","GSP"],
     "Honduras": ["Powertools","Gardening"],
     "Panama":   ["Powertools","Gardening"],
     "Nicaragua":["Gardening"],
@@ -475,6 +475,7 @@ elif sales_type == "Secondary Sales" and trans_type == "Outgoing":
 elif sales_type == "Secondary Sales" and trans_type == "Incoming":
     st.subheader("📥 Secondary Sales – Incoming")
     st.info("🚧 This section is under construction. Please switch to **Outgoing** to view data.")
+
 
 
 
